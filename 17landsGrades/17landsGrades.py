@@ -63,5 +63,11 @@ with open("./cardRatings/card-ratings-2023-06-22.csv", "r", encoding="utf-8-sig"
 with open("./jsonCardRatings/card-ratings.json", "w") as jsonFile:
     jsonFile.write(json.dumps(data, indent=4))
 
+# print the name of each card
+with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
+    jsonData = json.load(jsonFile)
+    for card in jsonData:
+        print(card["Name"])
+
 
 
