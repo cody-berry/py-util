@@ -28,10 +28,19 @@ while not done:
 
 
 print(distribution)
+
 mean = 0
 for dataPoint in distribution:
     mean += dataPoint
 mean /= len(distribution)
 
-print(mean)
-print(np.mean(distribution))
+print("mean: ", mean)
+print("mean from numpy: ", np.std(distribution))
+
+stDev = 0
+for dataPoint in distribution:
+    stDev += (mean - dataPoint)**2
+stDev **= 0.5
+
+print("standard deviation: ", stDev)
+print("standard deviation from numpy: ", np.std(distribution))
