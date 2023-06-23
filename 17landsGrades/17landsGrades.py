@@ -70,31 +70,76 @@ with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
 
     # calculate the mean
     mean = 0
+
+    # new dataset needed to account for cards without enough data
     data = []
     for card in jsonData:
         if (card["GIH WR"]):
             mean += float(card["GIH WR"][:-1])
             data.append(float(card["GIH WR"][:-1]))
-    mean /= len(jsonData)
+    mean /= len(data)
     print("mean:", str(mean) + "%")
-    print("numpy mean:", np.mean(data))
 
     # calculate the standard deviation
     stdev = 0
     for card in jsonData:
         if (card["GIH WR"]):
             stdev += (float(card["GIH WR"][:-1]) - mean)**2
-    stdev /= len(jsonData)
+    stdev /= len(data)
     stdev **= 0.5
     print("standard deviation:", stdev)
-    print("standard deviation numpy:", np.std(data))
 
     # print the card data
     for card in jsonData:
         if (card["GIH WR"]):
-            print(str((float(card["GIH WR"][:-1]) - mean)/stdev)[:5], "  ", card["GIH WR"], "  ", card["Name"])
+            zScore = (float(card["GIH WR"][:-1]) - mean)/stdev
+
+            # calculate the grade based on the z-score
+            grade = "  "  # use this as extra spacing
+
+            # S range
+            if (zScore > 3):
+                grade = "S+"
+            elif (zScore > 2.75):
+                grade = "S "
+            elif (zScore > 2.5):
+                grade = "S-"
+            # A range
+            elif (zScore > (2.5 - 1/3)):
+                grade = "A+"
+            elif (zScore > (1.5 + 1/3)):
+                grade = "A "
+            elif (zScore > 1.5):
+                grade = "A-"
+            # B range
+            elif (zScore > (1.5 - 1/3)):
+                grade = "B+"
+            elif (zScore > (0.5 + 1/3)):
+                grade = "B "
+            elif (zScore > 0.5):
+                grade = "B-"
+            # C range
+            elif (zScore > (0.5 - 1/3)):
+                grade = "C+"
+            elif (zScore > (-0.5 + 1/3)):
+                grade = "C "
+            elif (zScore > -0.5):
+                grade = "C-"
+            # D range
+            elif (zScore > (-0.5 - 1/3)):
+                grade = "D+"
+            elif (zScore > (-1.5 + 1/3)):
+                grade = "D "
+            elif (zScore > -2):
+                grade = "D-"
+            # F range
+            else:
+                grade = "F "
+
+
+            print(grade, str(zScore)[:5], " ", card["GIH WR"], " ", card["Name"])
         else:
-            print("Not enough data for:", card["Name"])
+            print("Inadequate data for", card["Name"])
 
 
 
