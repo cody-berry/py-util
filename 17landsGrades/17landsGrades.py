@@ -64,6 +64,7 @@ with open("./jsonCardRatings/card-ratings.json", "w") as jsonFile:
     # write the json.dumps output with an indent of 4 to the json file
     jsonFile.write(json.dumps(data, indent=4))
 
+
 # print the name and game in hand win rate of each card
 with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
     jsonData = json.load(jsonFile)
@@ -90,7 +91,8 @@ with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
     print("standard deviation:", stdev)
 
     # print the card data
-    for card in jsonData:
+    for i in range(0, len(jsonData)):
+        card = jsonData.pop()
         if (card["GIH WR"]):
             zScore = (float(card["GIH WR"][:-1]) - mean)/stdev
 
@@ -130,16 +132,24 @@ with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
                 grade = "D+"
             elif (zScore > (-1.5 + 1/3)):
                 grade = "D "
-            elif (zScore > -2):
+            elif (zScore > -1.5):
                 grade = "D-"
+            # E range
+            elif (zScore > -2):
+                grade = "E "
             # F range
             else:
                 grade = "F "
 
+            card["zScore"] = str(zScore)[:5]
+            card["grade"] = grade
 
-            print(grade, str(zScore)[:5], " ", card["GIH WR"], " ", card["Name"])
+            print(card["grade"], card["zScore"], " ", card["GIH WR"], " ", card["Name"])
         else:
             print("Inadequate data for", card["Name"])
+        jsonData.insert(0, card)
+
+print(jsonData)
 
 
 
