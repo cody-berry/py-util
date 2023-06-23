@@ -1,7 +1,7 @@
 # Testing section
 
 # Section 1: Testing mean on a distribution.
-# import numpy as np
+import numpy as np
 # distribution = []
 # done = False
 #
@@ -61,13 +61,40 @@ with open("./cardRatings/card-ratings-2023-06-22.csv", "r", encoding="utf-8-sig"
 
 # dump the list of dictionaries into a json file
 with open("./jsonCardRatings/card-ratings.json", "w") as jsonFile:
+    # write the json.dumps output with an indent of 4 to the json file
     jsonFile.write(json.dumps(data, indent=4))
 
-# print the name of each card
+# print the name and game in hand win rate of each card
 with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
     jsonData = json.load(jsonFile)
+
+    # calculate the mean
+    mean = 0
+    data = []
     for card in jsonData:
-        print(card["Name"])
+        if (card["GIH WR"]):
+            mean += float(card["GIH WR"][:-1])
+            data.append(float(card["GIH WR"][:-1]))
+    mean /= len(jsonData)
+    print("mean:", str(mean) + "%")
+    print("numpy mean:", np.mean(data))
+
+    # calculate the standard deviation
+    stdev = 0
+    for card in jsonData:
+        if (card["GIH WR"]):
+            stdev += (float(card["GIH WR"][:-1]) - mean)**2
+    stdev /= len(jsonData)
+    stdev **= 0.5
+    print("standard deviation:", stdev)
+    print("standard deviation numpy:", np.std(data))
+
+    # print the card data
+    for card in jsonData:
+        if (card["GIH WR"]):
+            print(str((float(card["GIH WR"][:-1]) - mean)/stdev)[:5], "  ", card["GIH WR"], "  ", card["Name"])
+        else:
+            print("Not enough data for:", card["Name"])
 
 
 
