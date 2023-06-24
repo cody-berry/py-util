@@ -157,14 +157,18 @@ with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
         jsonDataDict[card["Name"]] = card
 
 
-import fuzzywuzzy
+# import fuzzywuzzy
 from fuzzywuzzy import process
 
 while True:
     delimiter = ";"  # the delimiter between every card
 
+    # input card name(s) with a delimiter
     inputCards = input("Enter card name → ")
     cards = []
+    # iterate through every character. if it isn't a space and it isn't the
+    # delimiter, add it to the card string. if it's a space, don't do anything.
+    # if it's the delimiter reset the card stringa nd append it to the cards.
     currentCardString = ""
     for char in inputCards:
         if not char == delimiter and not char == " ":
@@ -174,13 +178,14 @@ while True:
             currentCardString = ""
     cards.append(currentCardString)
 
+    # print the table for every card
     print("   zscore   ohwr  gihwr   name")
 
     for card in cards:
         bestMatch = process.extractOne(card, cardNames)
         cardName = bestMatch[0]
         cardInDict = jsonDataDict[cardName]
-        if (cardInDict["GIH WR"]):
+        if (cardInDict["GIH WR"] and cardInDict["OH WR"]):
             print(cardInDict["grade"], cardInDict["zScore"], " ",
                   cardInDict["OH WR"], " ", cardInDict["GIH WR"], " ",
                   cardInDict["Name"])
