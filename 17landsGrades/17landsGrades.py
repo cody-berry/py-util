@@ -69,6 +69,7 @@ cardNames = []
 # print the name and game in hand win rate of each card
 with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
     jsonData = json.load(jsonFile)
+    jsonDataDict = {}
 
     # calculate the mean
     mean = 0
@@ -153,13 +154,39 @@ with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
         else:
             print("Inadequate data for", card["Name"])
             print("  zscore  gihwr   name")
-        jsonData.insert(0, card)
+        jsonDataDict[card["Name"]] = card
 
-print(jsonData)
 
 import fuzzywuzzy
 from fuzzywuzzy import process
-bestMatch = process.extract("Arwen", cardNames, limit=15)
-print(bestMatch)
+
+while True:
+    delimiter = ";"  # the delimiter between every card
+
+    inputCards = input("Enter card name → ")
+    cards = []
+    currentCardString = ""
+    for char in inputCards:
+        if not char == delimiter and not char == " ":
+            currentCardString += char
+        if char == delimiter:
+            cards.append(currentCardString)
+            currentCardString = ""
+    cards.append(currentCardString)
+
+    print("   zscore   ohwr  gihwr   name")
+
+    for card in cards:
+        bestMatch = process.extractOne(card, cardNames)
+        cardName = bestMatch[0]
+        cardInDict = jsonDataDict[cardName]
+        if (cardInDict["GIH WR"]):
+            print(cardInDict["grade"], cardInDict["zScore"], " ",
+                  cardInDict["OH WR"], " ", cardInDict["GIH WR"], " ",
+                  cardInDict["Name"])
+        else:
+            print("Insufficient data for", cardInDict["Name"])
+
+
 
 
