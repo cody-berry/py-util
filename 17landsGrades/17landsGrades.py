@@ -2,6 +2,8 @@
 
 # Section 1: Testing mean on a distribution.
 import numpy as np
+
+
 # distribution = []
 # done = False
 #
@@ -46,6 +48,55 @@ import numpy as np
 # print("standard deviation: ", stDev)
 # print("standard deviation from numpy: ", np.std(distribution))
 
+# calculate the grade based on the z-score
+def calculateGrade(zScore):
+    result = "  "  # use this as extra spacing
+
+    # S range
+    if zScore > 3:
+        result = "S+"
+    elif zScore > 2.75:
+        result = "S "
+    elif zScore > 2.50:
+        result = "S-"
+    # A range
+    elif zScore > (2.5 - 1 / 3):
+        result = "A+"
+    elif zScore > (1.5 + 1 / 3):
+        result = "A "
+    elif zScore > 1.5:
+        result = "A-"
+    # B range
+    elif zScore > (1.5 - 1 / 3):
+        result = "B+"
+    elif zScore > (0.5 + 1 / 3):
+        result = "B "
+    elif zScore > 0.5:
+        result = "B-"
+    # C range
+    elif zScore > (0.5 - 1 / 3):
+        result = "C+"
+    elif zScore > (-0.5 + 1 / 3):
+        result = "C "
+    elif zScore > -0.5:
+        result = "C-"
+    # D range
+    elif zScore > (-0.5 - 1 / 3):
+        result = "D+"
+    elif zScore > (-1.5 + 1 / 3):
+        result = "D "
+    elif zScore > -1.5:
+        result = "D-"
+    # E range
+    elif zScore > -2:
+        result = "E "
+    # F range
+    else:
+        result = "F "
+
+    return result
+
+
 # Opens the csv and puts it in a list dictionaries
 import csv
 import json
@@ -54,7 +105,8 @@ data = []
 
 # utf-8 encoding without the byte order mark
 # parse the csv data into a list of dictionaries for each card
-with open("./cardRatings/card-ratings-2023-06-22.csv", "r", encoding="utf-8-sig") as csvData:
+with open("./cardRatings/card-ratings-2023-06-22.csv", "r",
+          encoding="utf-8-sig") as csvData:
     csvReaderResult = csv.DictReader(csvData)
     for row in csvReaderResult:
         data.append(row)
@@ -72,90 +124,84 @@ with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
     jsonDataDict = {}
 
     # calculate the mean
-    mean = 0
+    meanGIH = 0
+    meanOH = 0
+    meanIWD = 0
 
     # new dataset needed to account for cards without enough data
-    data = []
+    dataLength = 0
     for card in jsonData:
-        if (card["GIH WR"]):
-            mean += float(card["GIH WR"][:-1])
-            data.append(float(card["GIH WR"][:-1]))
-    mean /= len(data)
-    print("mean:", str(mean) + "%")
+        if card["OH WR"] and card["IWD"]:
+            meanGIH += float(card["GIH WR"][:-1])
+            meanOH += float(card["OH WR"][:-1])
+            meanIWD += float(card["IWD"][:-2])
+            dataLength += 1
+    meanGIH /= dataLength
+    meanOH /= dataLength
+    meanIWD /= dataLength
 
     # calculate the standard deviation
-    stdev = 0
+    stdevGIH = 0
+    stdevOH = 0
+    stdevIWD = 0
     for card in jsonData:
-        if (card["GIH WR"]):
-            stdev += (float(card["GIH WR"][:-1]) - mean)**2
-    stdev /= len(data)
-    stdev **= 0.5
-    print("standard deviation:", stdev)
+        if card["OH WR"] and card["IWD"]:
+            stdevGIH += (float(card["GIH WR"][:-1]) - meanGIH) ** 2
+            stdevOH += (float(card["OH WR"][:-1]) - meanOH) ** 2
+            stdevIWD += (float(card["IWD"][:-2]) - meanIWD) ** 2
+    stdevGIH /= dataLength
+    stdevGIH **= 0.5
+    stdevOH /= dataLength
+    stdevOH **= 0.5
+    stdevIWD /= dataLength
+    stdevIWD **= 0.5
 
     print("Overall data:")
-    print("   zscore   gihwr   name")
+    print("GIH WR%           OH WR%            IWD               name")
 
     # print the card data
     for i in range(0, len(jsonData)):
         card = jsonData.pop()
         cardNames.append(card["Name"])
-        if (card["GIH WR"]):
-            zScore = (float(card["GIH WR"][:-1]) - mean)/stdev
+        if card["OH WR"] and card["IWD"]:
+            zScore = (float(card["GIH WR"][:-1]) - meanGIH) / stdevGIH
 
-            # calculate the grade based on the z-score
-            grade = "  "  # use this as extra spacing
+            grade = calculateGrade(zScore)
 
-            # S range
-            if (zScore > 3):
-                grade = "S+"
-            elif (zScore > 2.75):
-                grade = "S "
-            elif (zScore > 2.5):
-                grade = "S-"
-            # A range
-            elif (zScore > (2.5 - 1/3)):
-                grade = "A+"
-            elif (zScore > (1.5 + 1/3)):
-                grade = "A "
-            elif (zScore > 1.5):
-                grade = "A-"
-            # B range
-            elif (zScore > (1.5 - 1/3)):
-                grade = "B+"
-            elif (zScore > (0.5 + 1/3)):
-                grade = "B "
-            elif (zScore > 0.5):
-                grade = "B-"
-            # C range
-            elif (zScore > (0.5 - 1/3)):
-                grade = "C+"
-            elif (zScore > (-0.5 + 1/3)):
-                grade = "C "
-            elif (zScore > -0.5):
-                grade = "C-"
-            # D range
-            elif (zScore > (-0.5 - 1/3)):
-                grade = "D+"
-            elif (zScore > (-1.5 + 1/3)):
-                grade = "D "
-            elif (zScore > -1.5):
-                grade = "D-"
-            # E range
-            elif (zScore > -2):
-                grade = "E "
-            # F range
+            card["zScoreGIH"] = str(zScore)[:6]
+            card["gradeGIH"] = grade
+
+            zScore = (float(card["OH WR"][:-1]) - meanOH) / stdevOH
+
+            grade = calculateGrade(zScore)
+
+            card["zScoreOH"] = str(zScore)[:6]
+            card["gradeOH"] = grade
+
+            zScore = (float(card["IWD"][:-2]) - meanIWD) / stdevIWD
+
+            grade = calculateGrade(zScore)
+
+            card["zScoreIWD"] = str(zScore)[:6]
+            card["gradeIWD"] = grade
+
+            # space properly so that if there is a negative in the IWD, it
+            # doesn't matter even though a negative takes up a character
+            if (float(card["IWD"][:-2]) > 0):
+                print(card["gradeGIH"], card["zScoreGIH"], card["GIH WR"], " ",
+                      card["gradeOH"], card["zScoreOH"], card["OH WR"], " ",
+                      card["gradeIWD"], card["zScoreIWD"], card["IWD"], " ",
+                      card["Name"])
             else:
-                grade = "F "
+                print(card["gradeGIH"], card["zScoreGIH"], card["GIH WR"], " ",
+                      card["gradeOH"], card["zScoreOH"], card["OH WR"], " ",
+                      card["gradeIWD"], card["zScoreIWD"], card["IWD"], "",
+                      card["Name"])
 
-            card["zScore"] = str(zScore)[:6]
-            card["grade"] = grade
-
-            print(card["grade"], card["zScore"], " ", card["GIH WR"], " ", card["Name"])
         else:
             print("Inadequate data for", card["Name"])
-            print("  zscore  gihwr   name")
+            print("GIH WR%           OH WR%            IWD               name")
         jsonDataDict[card["Name"]] = card
-
 
 # import fuzzywuzzy
 from fuzzywuzzy import process
@@ -179,19 +225,17 @@ while True:
     cards.append(currentCardString)
 
     # print the table for every card
-    print("   zscore   ohwr  gihwr   name")
+    print("GIH WR%           OH WR%            IWD               name")
 
     for card in cards:
         bestMatch = process.extractOne(card, cardNames)
         cardName = bestMatch[0]
         cardInDict = jsonDataDict[cardName]
         if (cardInDict["GIH WR"] and cardInDict["OH WR"]):
-            print(cardInDict["grade"], cardInDict["zScore"], " ",
-                  cardInDict["OH WR"], " ", cardInDict["GIH WR"], " ",
+            print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
+                  cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
+                  cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], " ",
                   cardInDict["Name"])
         else:
             print("Insufficient data for", cardInDict["Name"])
-
-
-
-
+            print("GIH WR%           OH WR%            IWD               name")
