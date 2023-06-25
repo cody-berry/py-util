@@ -105,7 +105,7 @@ data = []
 
 # utf-8 encoding without the byte order mark
 # parse the csv data into a list of dictionaries for each card
-with open("./cardRatings/card-ratings-2023-06-22.csv", "r",
+with open("./cardRatings/card-ratings-2023-06-25.csv", "r",
           encoding="utf-8-sig") as csvData:
     csvReaderResult = csv.DictReader(csvData)
     for row in csvReaderResult:
@@ -157,7 +157,7 @@ with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
     stdevIWD **= 0.5
 
     print("Overall data:")
-    print("GIH WR%           OH WR%            IWD               name")
+    print("GIH WR%           OH WR%            IWD                name")
 
     # print the card data
     for i in range(0, len(jsonData)):
@@ -190,17 +190,17 @@ with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
             if (float(card["IWD"][:-2]) > 0):
                 print(card["gradeGIH"], card["zScoreGIH"], card["GIH WR"], " ",
                       card["gradeOH"], card["zScoreOH"], card["OH WR"], " ",
-                      card["gradeIWD"], card["zScoreIWD"], card["IWD"], " ",
+                      card["gradeIWD"], card["zScoreIWD"], card["IWD"], "  ",
                       card["Name"])
             else:
                 print(card["gradeGIH"], card["zScoreGIH"], card["GIH WR"], " ",
                       card["gradeOH"], card["zScoreOH"], card["OH WR"], " ",
-                      card["gradeIWD"], card["zScoreIWD"], card["IWD"], "",
+                      card["gradeIWD"], card["zScoreIWD"], card["IWD"], " ",
                       card["Name"])
 
         else:
             print("Inadequate data for", card["Name"])
-            print("GIH WR%           OH WR%            IWD               name")
+            print("GIH WR%           OH WR%            IWD                name")
         jsonDataDict[card["Name"]] = card
 
 # import fuzzywuzzy
@@ -224,8 +224,13 @@ while True:
             currentCardString = ""
     cards.append(currentCardString)
 
+    # show oracle text if there is only one card
+    showOracleText = False
+    if len(currentCardString) == 1:
+        showOracleText = True
+
     # print the table for every card
-    print("GIH WR%           OH WR%            IWD               name")
+    print("GIH WR%           OH WR%            IWD                name")
 
     for card in cards:
         bestMatch = process.extractOne(card, cardNames)
@@ -238,4 +243,4 @@ while True:
                   cardInDict["Name"])
         else:
             print("Insufficient data for", cardInDict["Name"])
-            print("GIH WR%           OH WR%            IWD               name")
+            print("GIH WR%           OH WR%            IWD                name")
