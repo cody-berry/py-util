@@ -213,7 +213,7 @@ while True:
     delimiter = ";"  # the delimiter between every card
 
     # input card name(s) with a delimiter
-    inputCards = input("Enter card name → ")
+    inputCards = input("Enter card name (input 'instruction' for instructions list)→ ")
     cards = []
     # iterate through every character. if it isn't a space and it isn't the
     # delimiter, add it to the card string. if it's a space, don't do anything.
@@ -234,29 +234,58 @@ while True:
             showOracleText = True
             cards = [cards[0][1:]]
 
-    # print the table for every card
-    print("GIH WR%           OH WR%            IWD                name")
+    # show an instruction manual if "instruction" is the input
+    if len(cards) == 1:
+        if currentCardString == "instruction":
+            print("Instruction manual:")
+            print("⚠ Please do not press Enter without anything inside. ⚠")
+            print("At the top of the print line, you will see the ratings of "
+                  + "all cards, formatted as the last part says.")
+            print("Type a number of cards. You can use abbreviations and you "
+                  + "can get away with most typos. Be careful, though. Don't "
+                  + "expect to get what you want, especially if the input is "
+                  + "part of another card.")
+            print("Card names are split with ';'. ")
+            print("Spaces don't matter. ")
+            print("Don't use ';' as an ender.")
+            print("Card data is in the format of:")
+            print("{grade for GIH WR} {zScore for GIH WR} {GIH WR} {repeat for "
+                  + "OH WR and IWD} {card name}")
+            print("Where:")
+            print("— GIH WR is the winrate when the card is in your hand. ")
+            print("— OH WR is the winrate when the card is in your opening hand.")
+            print("— IWD is the improvement when drawn.")
+            print("— The grade ranges from S+, S, S-, all the way down to D-, E, "
+                  + "and F. ")
+            print("— The z-score is the number of standard deviations away from"
+                  + "the mean that whatever you're measuring the z-score of is.")
+            print("— If you type '!' as the first character and there are no ';"
+                  + "'s, it will show the oracle text.")
 
-    for card in cards:
-        bestMatch = process.extractOne(card, cardNames)
-        cardName = bestMatch[0]
-        cardInDict = jsonDataDict[cardName]
-        if (cardInDict["GIH WR"] and cardInDict["OH WR"]):
-            # space properly so that if there is a negative in the IWD, it
-            # doesn't matter even though a negative takes up a character
-            if (float(cardInDict["IWD"][:-2]) > 0):
-                print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
-                      cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
-                      cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], "  ",
-                      cardInDict["Name"])
+    else:
+        # print the table for every card
+        print("GIH WR%           OH WR%            IWD                name")
+
+        for card in cards:
+            bestMatch = process.extractOne(card, cardNames)
+            cardName = bestMatch[0]
+            cardInDict = jsonDataDict[cardName]
+            if (cardInDict["GIH WR"] and cardInDict["OH WR"]):
+                # space properly so that if there is a negative in the IWD, it
+                # doesn't matter even though a negative takes up a character
+                if (float(cardInDict["IWD"][:-2]) > 0):
+                    print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
+                          cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
+                          cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], "  ",
+                          cardInDict["Name"])
+                else:
+                    print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
+                          cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
+                          cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], " ",
+                          cardInDict["Name"])
             else:
-                print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
-                      cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
-                      cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], " ",
-                      cardInDict["Name"])
-        else:
-            print("Insufficient data for", cardInDict["Name"])
-            print("GIH WR%           OH WR%            IWD                name")
-        if showOracleText:
-            print("There is no oracle text available in the card ratings.")
+                print("Insufficient data for", cardInDict["Name"])
+                print("GIH WR%           OH WR%            IWD                name")
+            if showOracleText:
+                print("There is no oracle text available in the card ratings.")
 
