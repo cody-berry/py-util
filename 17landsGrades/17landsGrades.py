@@ -164,6 +164,9 @@ with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
         card = jsonData.pop()
         cardNames.append(card["Name"])
         if card["OH WR"] and card["IWD"]:
+            # calculate and set zScores and grades for GIH WR% (game in hand
+            # winrate), OH WR% (opening hand winrate), and IWD (improvement
+            # when drawn).
             zScore = (float(card["GIH WR"][:-1]) - meanGIH) / stdevGIH
 
             grade = calculateGrade(zScore)
@@ -214,7 +217,7 @@ while True:
     cards = []
     # iterate through every character. if it isn't a space and it isn't the
     # delimiter, add it to the card string. if it's a space, don't do anything.
-    # if it's the delimiter reset the card stringa nd append it to the cards.
+    # if it's the delimiter reset the card string and append it to the cards.
     currentCardString = ""
     for char in inputCards:
         if not char == delimiter and not char == " ":
@@ -224,10 +227,12 @@ while True:
             currentCardString = ""
     cards.append(currentCardString)
 
-    # show oracle text if there is only one card
+    # show oracle text if there is only one card and the first is exclamation
     showOracleText = False
-    if len(currentCardString) == 1:
-        showOracleText = True
+    if len(cards) == 1:
+        if currentCardString[0] == "!":
+            showOracleText = True
+            cards = [cards[0][1:]]
 
     # print the table for every card
     print("GIH WR%           OH WR%            IWD                name")
@@ -237,10 +242,21 @@ while True:
         cardName = bestMatch[0]
         cardInDict = jsonDataDict[cardName]
         if (cardInDict["GIH WR"] and cardInDict["OH WR"]):
-            print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
-                  cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
-                  cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], " ",
-                  cardInDict["Name"])
+            # space properly so that if there is a negative in the IWD, it
+            # doesn't matter even though a negative takes up a character
+            if (float(cardInDict["IWD"][:-2]) > 0):
+                print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
+                      cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
+                      cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], "  ",
+                      cardInDict["Name"])
+            else:
+                print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
+                      cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
+                      cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], " ",
+                      cardInDict["Name"])
         else:
             print("Insufficient data for", cardInDict["Name"])
             print("GIH WR%           OH WR%            IWD                name")
+        if showOracleText:
+            print("There is no oracle text available in the card ratings.")
+
