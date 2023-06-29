@@ -206,6 +206,31 @@ with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
             print("GIH WR%           OH WR%            IWD                name")
         jsonDataDict[card["Name"]] = card
 
+# import the set data
+import requests
+
+# constructing the API request
+set_code = "ltr"
+url = f"https://api.scryfall.com/cards/search?q=set:{set_code}"
+
+# sending the API request
+response = requests.get(url)
+
+# processing the API response
+if response.status_code == 200:
+    data = response.json()
+    # extracting relevant information from the response
+    cards = data['data']
+
+    # saving the data
+    with open(f"{set_code}/cards.json", "w") as file:
+        json.dump(cards, file, indent=4)
+        print("Data saved successfully.")
+else:
+    print("Failed to fetch data from the API. Error code:", response.status_code)
+
+
+
 # import fuzzywuzzy
 from fuzzywuzzy import process
 
@@ -262,30 +287,29 @@ while True:
             print("— If you type '!' as the first character and there are no ';"
                   + "'s, it will show the oracle text.")
 
-    else:
         # print the table for every card
         print("GIH WR%           OH WR%            IWD                name")
 
-        for card in cards:
-            bestMatch = process.extractOne(card, cardNames)
-            cardName = bestMatch[0]
-            cardInDict = jsonDataDict[cardName]
-            if (cardInDict["GIH WR"] and cardInDict["OH WR"]):
-                # space properly so that if there is a negative in the IWD, it
-                # doesn't matter even though a negative takes up a character
-                if (float(cardInDict["IWD"][:-2]) > 0):
-                    print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
-                          cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
-                          cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], "  ",
-                          cardInDict["Name"])
-                else:
-                    print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
-                          cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
-                          cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], " ",
-                          cardInDict["Name"])
+    for card in cards:
+        bestMatch = process.extractOne(card, cardNames)
+        cardName = bestMatch[0]
+        cardInDict = jsonDataDict[cardName]
+        if (cardInDict["GIH WR"] and cardInDict["OH WR"]):
+            # space properly so that if there is a negative in the IWD, it
+            # doesn't matter even though a negative takes up a character
+            if (float(cardInDict["IWD"][:-2]) > 0):
+                print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
+                      cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
+                      cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], "  ",
+                      cardInDict["Name"])
             else:
-                print("Insufficient data for", cardInDict["Name"])
-                print("GIH WR%           OH WR%            IWD                name")
-            if showOracleText:
-                print("There is no oracle text available in the card ratings.")
+                print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
+                      cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
+                      cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], " ",
+                      cardInDict["Name"])
+        else:
+            print("Insufficient data for", cardInDict["Name"])
+            print("GIH WR%           OH WR%            IWD                name")
+        if showOracleText:
+            print("There is no oracle text available in the card ratings.")
 
