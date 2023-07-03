@@ -216,6 +216,8 @@ url = f"https://api.scryfall.com/cards/search?q=set:{set_code}"
 # sending the API request
 response = requests.get(url)
 
+scryfallDict = {}
+
 # processing the API response
 if response.status_code == 200:
     data = response.json()
@@ -223,12 +225,21 @@ if response.status_code == 200:
     cards = data['data']
 
     # saving the data
-    with open(f"{set_code}/cards.json", "w") as file:
-        json.dump(cards, file, indent=4)
-        print("Data saved successfully.")
-else:
-    print("Failed to fetch data from the API. Error code:", response.status_code)
+    # using pagination to retrieve all the cards
+    while data["has_more"]:
+        next_page_url = data["next_page"]
+        response = requests.get(next_page_url)
+        if (response.status_code == 200):
+            data = response.json()
+            cards.extend(data['data'])
+        else:
+            raise FileNotFoundError(f"Could not load next page. Error code: {response.status_code}")
 
+    # transform the json list into a json dict
+    scryfallDict = {card["name"]: card for card in cards}
+    print("Data saved successfully.")
+else:
+    raise FileNotFoundError(f"Could not load scryfall data for {set_code}. Error code: {response.status_code}")
 
 
 # import fuzzywuzzy
@@ -264,6 +275,7 @@ while True:
         if currentCardString == "instruction":
             print("Instruction manual:")
             print("⚠ Please do not press Enter without anything inside. ⚠")
+            print("⚠ Please forgive any typos, as this was made in half a month or so. ⚠")
             print("At the top of the print line, you will see the ratings of "
                   + "all cards, formatted as the last part says.")
             print("Type a number of cards. You can use abbreviations and you "
@@ -311,5 +323,9 @@ while True:
             print("Insufficient data for", cardInDict["Name"])
             print("GIH WR%           OH WR%            IWD                name")
         if showOracleText:
-            print("There is no oracle text available in the card ratings.")
+            # show all relevant information
+            scryfallCardData = scryfallDict[cardName]
+            print(f"\n{cardName} {scryfallCardData['mana_cost']}")
+            print(scryfallCardData["type_line"])
+            print(scryfallCardData["oracle_text"])
 
