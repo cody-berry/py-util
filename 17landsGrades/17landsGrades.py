@@ -307,8 +307,8 @@ while True:
     for card in cards:
         bestMatch = process.extractOne(card, cardNames)
         cardName = bestMatch[0]
-        cardInDict = jsonDataDict[cardName]
-        cardsSelected.append(cardInDict)
+        card = jsonDataDict[cardName]
+        cardsSelected.append(card)
 
     # sort the cards by gih wr% by importing functools, making a
     # compare function, and then sorting using that.
@@ -340,25 +340,23 @@ while True:
     for card in sortedCards:
         print(card["Name"])
 
-    for card in cards:
-        bestMatch = process.extractOne(card, cardNames)
-        cardName = bestMatch[0]
-        cardInDict = jsonDataDict[cardName]
-        if (cardInDict["GIH WR"] and cardInDict["OH WR"]):
+    for card in sortedCards:
+        cardName = card["Name"]
+        if card["GIH WR"] and card["OH WR"]:
             # space properly so that if there is a negative in the IWD, it
             # doesn't matter even though a negative takes up a character
-            if (float(cardInDict["IWD"][:-2]) > 0):
-                print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
-                      cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
-                      cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], "  ",
-                      cardInDict["Name"])
+            if float(card["IWD"][:-2]) > 0:
+                print(card["gradeGIH"], card["zScoreGIH"], card["GIH WR"], " ",
+                      card["gradeOH"], card["zScoreOH"], card["OH WR"], " ",
+                      card["gradeIWD"], card["zScoreIWD"], card["IWD"], "  ",
+                      card["Name"])
             else:
-                print(cardInDict["gradeGIH"], cardInDict["zScoreGIH"], cardInDict["GIH WR"], " ",
-                      cardInDict["gradeOH"], cardInDict["zScoreOH"], cardInDict["OH WR"], " ",
-                      cardInDict["gradeIWD"], cardInDict["zScoreIWD"], cardInDict["IWD"], " ",
-                      cardInDict["Name"])
+                print(card["gradeGIH"], card["zScoreGIH"], card["GIH WR"], " ",
+                      card["gradeOH"], card["zScoreOH"], card["OH WR"], " ",
+                      card["gradeIWD"], card["zScoreIWD"], card["IWD"], " ",
+                      card["Name"])
         else:
-            print("Insufficient data for", cardInDict["Name"])
+            print("Insufficient data for", card["Name"])
             print("GIH WR%           OH WR%            IWD                name")
         if showOracleText:
             # show all relevant information
