@@ -302,6 +302,44 @@ while True:
         # print the table for every card
         print("GIH WR%           OH WR%            IWD                name")
 
+    # gather all the cards so that we can sort them
+    cardsSelected = []
+    for card in cards:
+        bestMatch = process.extractOne(card, cardNames)
+        cardName = bestMatch[0]
+        cardInDict = jsonDataDict[cardName]
+        cardsSelected.append(cardInDict)
+
+    # sort the cards by gih wr% by importing functools, making a
+    # compare function, and then sorting using that.
+    import functools
+
+    def compareCards(card1, card2):
+        # handles ever in hand winrate
+        if float(card1["GIH WR"][:-1]) > float(card2["GIH WR"][:-1]):
+            return -1
+        if float(card1["GIH WR"][:-1]) < float(card2["GIH WR"][:-1]):
+            return 1
+        else:
+            # handles opening hand winrate
+            if float(card1["OH WR"][:-1]) > float(card2["OH WR"][:-1]):
+                return -1
+            if float(card1["OH WR"][:-1]) < float(card2["OH WR"][:-1]):
+                return 1
+            else:
+                # handles improvement when drawn
+                if float(card1["IWD"][:-2]) > float(card2["IWD"][:-2]):
+                    return -1
+                if float(card1["IWD"][:-2]) < float(card2["IWD"][:-2]):
+                    return 1
+                else:
+                    # if all are the same, maintain the order
+                    return 0
+
+    sortedCards = sorted(cardsSelected, key=functools.cmp_to_key(compareCards))
+    for card in sortedCards:
+        print(card["Name"])
+
     for card in cards:
         bestMatch = process.extractOne(card, cardNames)
         cardName = bestMatch[0]
