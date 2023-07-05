@@ -52,6 +52,9 @@ import numpy as np
 def calculateGrade(zScore):
     result = "  "  # use this as extra spacing
 
+    # Special: SS
+    if zScore > 3.5:
+        result = "SS"
     # S range
     if zScore > 3:
         result = "S+"
@@ -105,7 +108,7 @@ data = []
 
 # utf-8 encoding without the byte order mark
 # parse the csv data into a list of dictionaries for each card
-with open("./cardRatings/card-ratings-2023-07-02.csv", "r",
+with open("./cardRatings/card-ratings-2023-07-05.csv", "r",
           encoding="utf-8-sig") as csvData:
     csvReaderResult = csv.DictReader(csvData)
     for row in csvReaderResult:
