@@ -108,7 +108,7 @@ data = []
 
 # utf-8 encoding without the byte order mark
 # parse the csv data into a list of dictionaries for each card
-with open("./cardRatings/card-ratings-2023-07-05.csv", "r",
+with open("./cardRatings/card-ratings-2023-07-07.csv", "r",
           encoding="utf-8-sig") as csvData:
     csvReaderResult = csv.DictReader(csvData)
     for row in csvReaderResult:
