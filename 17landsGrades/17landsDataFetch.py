@@ -8,6 +8,7 @@ def fetchData(url):
     # checks if the data is valid or not (200 is a successful status code)
     if response.status_code == 200:
         data = response.json()
+        print("Data successfully loaded")
         return data
     else:
         # if not, print that it failed to fetch data
@@ -16,21 +17,24 @@ def fetchData(url):
 
 
 # the url that handles the expansion for LTR
-url = (f'https://www.17lands.com/card_ratings/data?expansion=LTR'
-       '&format=PremierDraft'
-       '&start_date=2023-05-28'
-       '&end_date=2023-07-06')
-print(url)
+LTRbaseURL = (f'https://www.17lands.com/card_ratings/data?expansion=LTR'
+              '&format=PremierDraft'
+              '&start_date=2023-05-28'
+              '&end_date=2023-07-06')
+print(LTRbaseURL)
 
-# the additions list is a list of strings to add to the url. the first element
-# handles all color pairs. the next ones handle all the color pairs.
-additions = ["" # all
-             "&colors=WU", "&colors=WB", "&colors=WR", "&colors=WG", # W color pairs
-             "&colors=UB", "&colors=UR", "&colors=UG", # U color pairs
-             "&colors=BR", "&colors=BG", # B color pairs
-             "&colors=RG" # R color pairs
+# with open("cardRatingsAuto/all.json", "w") as cardDataJSON:
+#     cardDataJSON.write(str(fetchData(LTRbaseURL)))
+
+# the additions list is a list of strings to add to the url. the base url
+# is handled first.
+additions = ["&colors=WU", "&colors=WB", "&colors=WR", "&colors=WG",
+             # W color pairs
+             "&colors=UB", "&colors=UR", "&colors=UG",  # U color pairs
+             "&colors=BR", "&colors=BG",  # B color pairs
+             "&colors=RG"  # R color pairs
              ]
 
 for addition in additions:
-    print(url + addition)
-
+    totalURL = LTRbaseURL + addition
+    print(totalURL)
