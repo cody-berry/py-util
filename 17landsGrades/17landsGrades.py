@@ -100,114 +100,70 @@ def calculateGrade(zScore):
     return result
 
 
-# Opens the csv and puts it in a list dictionaries
-import csv
 import json
-
-data = []
-
-# utf-8 encoding without the byte order mark
-# parse the csv data into a list of dictionaries for each card
-with open("./cardRatings/card-ratings-2023-07-07.csv", "r",
-          encoding="utf-8-sig") as csvData:
-    csvReaderResult = csv.DictReader(csvData)
-    for row in csvReaderResult:
-        data.append(row)
-
-# dump the list of dictionaries into a json file
-with open("./jsonCardRatings/card-ratings.json", "w") as jsonFile:
-    # write the json.dumps output with an indent of 4 to the json file
-    jsonFile.write(json.dumps(data, indent=4))
-
-cardNames = []
+meanGIH = 0
+meanOH = 0
+meanIWD = 0
+stdevGIH = 0
+stdevOH = 0
+stdevIWD = 0
 
 # print the name and game in hand win rate of each card
-with open("./jsonCardRatings/card-ratings.json", "r") as jsonFile:
+with open("./cardRatingsAuto/all.json", "r") as jsonFile:
+    print(jsonFile)
     jsonData = json.load(jsonFile)
-    jsonDataDict = {}
+    cardData = jsonData["cardData"]
 
     # calculate the mean
-    meanGIH = 0
-    meanOH = 0
-    meanIWD = 0
-
-    # new dataset needed to account for cards without enough data
-    dataLength = 0
-    for card in jsonData:
-        if card["OH WR"] and card["IWD"]:
-            meanGIH += float(card["GIH WR"][:-1])
-            meanOH += float(card["OH WR"][:-1])
-            meanIWD += float(card["IWD"][:-2])
-            dataLength += 1
-    meanGIH /= dataLength
-    meanOH /= dataLength
-    meanIWD /= dataLength
+    # data length needed to account for not enough data
+    meanGIH = jsonData["generalStats"]["OH WR"]["μ"]
+    meanOH = jsonData["generalStats"]["GIH WR"]["μ"]
+    meanIWD = jsonData["generalStats"]["IWD"]["μ"]
 
     # calculate the standard deviation
-    stdevGIH = 0
-    stdevOH = 0
-    stdevIWD = 0
-    for card in jsonData:
-        if card["OH WR"] and card["IWD"]:
-            stdevGIH += (float(card["GIH WR"][:-1]) - meanGIH) ** 2
-            stdevOH += (float(card["OH WR"][:-1]) - meanOH) ** 2
-            stdevIWD += (float(card["IWD"][:-2]) - meanIWD) ** 2
-    stdevGIH /= dataLength
-    stdevGIH **= 0.5
-    stdevOH /= dataLength
-    stdevOH **= 0.5
-    stdevIWD /= dataLength
-    stdevIWD **= 0.5
+    stdevGIH = jsonData["generalStats"]["OH WR"]["σ"]
+    stdevOH = jsonData["generalStats"]["GIH WR"]["σ"]
+    stdevIWD = jsonData["generalStats"]["IWD"]["σ"]
 
     print("Overall data:")
     print("GIH WR%           OH WR%            IWD                name")
 
     # print the card data
-    for i in range(0, len(jsonData)):
-        card = jsonData.pop()
-        cardNames.append(card["Name"])
+    for cardName, card in cardData.items():
         if card["OH WR"] and card["IWD"]:
             # calculate and set zScores and grades for GIH WR% (game in hand
             # winrate), OH WR% (opening hand winrate), and IWD (improvement
             # when drawn).
-            zScore = (float(card["GIH WR"][:-1]) - meanGIH) / stdevGIH
+            zScoreGIH = (float(card["GIH WR"][:-1]) - meanGIH) / stdevGIH
 
-            grade = calculateGrade(zScore)
+            gradeGIH = calculateGrade(zScoreGIH)
 
-            card["zScoreGIH"] = str(zScore)[:6]
-            card["gradeGIH"] = grade
+            zScoreOH = (float(card["OH WR"][:-1]) - meanOH) / stdevOH
 
-            zScore = (float(card["OH WR"][:-1]) - meanOH) / stdevOH
+            gradeOH = calculateGrade(zScoreOH)
 
-            grade = calculateGrade(zScore)
+            zScoreIWD = (float(card["IWD"][:-2]) - meanIWD) / stdevIWD
 
-            card["zScoreOH"] = str(zScore)[:6]
-            card["gradeOH"] = grade
-
-            zScore = (float(card["IWD"][:-2]) - meanIWD) / stdevIWD
-
-            grade = calculateGrade(zScore)
-
-            card["zScoreIWD"] = str(zScore)[:6]
-            card["gradeIWD"] = grade
+            gradeIWD = calculateGrade(zScoreIWD)
 
             # space properly so that if there is a negative in the IWD, it
             # doesn't matter even though a negative takes up a character
             if (float(card["IWD"][:-2]) > 0):
-                print(card["gradeGIH"], card["zScoreGIH"], card["GIH WR"], " ",
-                      card["gradeOH"], card["zScoreOH"], card["OH WR"], " ",
-                      card["gradeIWD"], card["zScoreIWD"], card["IWD"], "  ",
+                print(gradeGIH, card["zScoreGIH"], card["GIH WR"], " ",
+                      gradeOH, card["zScoreOH"], card["OH WR"], " ",
+                      gradeIWD, card["zScoreIWD"], card["IWD"], "  ",
                       card["Name"])
             else:
-                print(card["gradeGIH"], card["zScoreGIH"], card["GIH WR"], " ",
-                      card["gradeOH"], card["zScoreOH"], card["OH WR"], " ",
-                      card["gradeIWD"], card["zScoreIWD"], card["IWD"], " ",
+                print(gradeGIH, zScoreGIH, card["GIH WR"], " ",
+                      gradeOH, zScoreOH, card["OH WR"], " ",
+                      gradeIWD, zScoreIWD, card["IWD"], " ",
                       card["Name"])
 
         else:
             print("Inadequate data for", card["Name"])
             print("GIH WR%           OH WR%            IWD                name")
-        jsonDataDict[card["Name"]] = card
+
+    cardNames = list(cardData.keys())
 
 # import the set data
 import requests
@@ -305,13 +261,25 @@ while True:
         # print the table for every card
         print("GIH WR%           OH WR%            IWD                name")
 
+    # no matter how many cards there are, if the third character is ":",
+    # set the color pair to the combination of the first and second
+    # chars if it's in WU, UB, BR, RG, GW, WR, RU, UG, GB, and BW.
+    # otherwise, set the color pair to "all".
+    colorPair = "all"
+    if inputCards[2] == ":":
+        if inputCards[:2] in ["WU", "UB", "BR", "RG", "WG",
+                              "WR", "UR", "UG", "BG", "WB"]:
+            colorPair = inputCards[:2]
+
     # gather all the cards so that we can sort them
     cardsSelected = []
-    for card in cards:
-        bestMatch = process.extractOne(card, cardNames)
-        cardName = bestMatch[0]
-        card = jsonDataDict[cardName]
-        cardsSelected.append(card)
+    with open(f"{colorPair}.json", "r") as data:
+        data = json.load(data)
+        for card in cards:
+            bestMatch = process.extractOne(card, cardNames)
+            cardName = bestMatch[0]
+            card = data[cardName]
+            cardsSelected.append(card)
 
     # sort the cards by gih wr% by importing functools, making a
     # compare function, and then sorting using that.

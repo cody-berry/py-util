@@ -1,4 +1,5 @@
 # ⚠Only run once a day if you don't want 17lands to complain at you.⚠
+import json
 import requests
 
 
@@ -60,7 +61,14 @@ print(baseURL)
 # "IWD": "2.0pp"
 # }
 def processData(data):
-    result = []
+    result = {}
+
+    cardData = {}
+    # make the OH WR and GIH WR mean so that we can keep
+    # track
+    OH_WRs = []
+    GIH_WRs = []
+    IWDs = []
     for card in data:
         cardAlternate = {}
         cardAlternate["Name"] = card["name"]
@@ -83,15 +91,61 @@ def processData(data):
         # WR and add %
         if (card["opening_hand_win_rate"]):
             cardAlternate["OH WR"] = str(round(card["opening_hand_win_rate"]*100, 1)) + "%"
+            OH_WRs.append(float(cardAlternate["OH WR"][:-1]))
         if (card["ever_drawn_win_rate"]):
             cardAlternate["GIH WR"] = str(round(card["ever_drawn_win_rate"]*100, 1)) + "%"
+            GIH_WRs.append(float(cardAlternate["GIH WR"][:-1]))
 
         # round to 1 decimal point for IWD and add
         # pp
         if (card["drawn_improvement_win_rate"]):
             cardAlternate["IWD"] = str(round(card["drawn_improvement_win_rate"]*100, 1)) + "pp"
-        result.append(cardAlternate)
-    return str(result)
+            IWDs.append(float(cardAlternate["IWD"][:-2]))
+        cardData[card["name"]] = cardAlternate
+
+    # calculate the means (μ) and standard deviations (σ)
+    print(OH_WRs)
+    print(GIH_WRs)
+    print(IWDs)
+    OH_WRμ = 0
+    for sample in OH_WRs:
+        OH_WRμ += sample
+    OH_WRμ /= len(OH_WRs)
+    GIH_WRμ = 0
+    for sample in GIH_WRs:
+        GIH_WRμ += sample
+    GIH_WRμ /= len(GIH_WRs)
+    IWDμ = 0
+    for sample in IWDs:
+        IWDμ += sample
+    IWDμ /= len(IWDs)
+
+    OH_WRσ = 0
+    for sample in OH_WRs:
+        OH_WRσ += (sample - OH_WRμ)**2
+    OH_WRσ /= len(OH_WRs)
+    OH_WRσ **= 0.5
+    GIH_WRσ = 0
+    for sample in GIH_WRs:
+        GIH_WRσ += (sample - GIH_WRμ)**2
+    GIH_WRσ /= len(GIH_WRs)
+    GIH_WRσ **= 0.5
+    IWDσ = 0
+    for sample in IWDs:
+        IWDσ += (sample - IWDμ)**2
+    IWDσ /= len(IWDs)
+    IWDσ **= 0.5
+
+    OH_WRStats = {"μ": OH_WRμ, "σ": OH_WRσ}
+    GIH_WRStats = {"μ": GIH_WRμ, "σ": GIH_WRσ}
+    IWDStats = {"μ": IWDμ, "σ": IWDσ}
+
+    result["cardData"] = cardData
+    result["generalStats"] = {"OH WR": OH_WRStats,
+                              "GIH WR": GIH_WRStats,
+                              "IWD": IWDStats}
+
+    return json.dumps(result)
 
 
 with open("cardRatingsAuto/all.json", "w") as cardDataJSON:
