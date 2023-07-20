@@ -20,7 +20,7 @@ def fetchData(url):
 
 # the url that handles the expansion for the current set
 baseURL = (f'https://www.17lands.com/card_ratings/data?expansion=LTR'
-           '&format=PremierDraft')
+           '&format=PremierDraft&user_group=top')
 print(baseURL)
 
 
@@ -189,23 +189,23 @@ master = {}
 
 for addition in additions:
     totalURL = baseURL + addition
-    print(f'🍉 {totalURL}')
+    print(f'🍑 {totalURL}')
     # print color pair:
     colorPair = addition[-2:]
     print(colorPair)
 
-    with open(f"cardRatingsAuto/{colorPair}.json", "w") as cardDataJSON:
+    with open(f"cardRatingsTop/{colorPair}.json", "w") as cardDataJSON:
         data = fetchData(totalURL)
         processedData = processData(data)
         cardDataJSON.write(json.dumps(processedData))
         master = processDataToMaster(colorPair, processedData, master)
 
-print(f'🍎 {baseURL}')
-with open("cardRatingsAuto/all.json", "w") as cardDataJSON:
+print(f'🍊 {baseURL}')
+with open("cardRatingsTop/all.json", "w") as cardDataJSON:
     data = fetchData(baseURL)
     processedData = processData(data)
     cardDataJSON.write(json.dumps(processedData))
     master = processDataToMaster("all", processedData, master)
 
-with open("cardRatingsAuto/master.json", "w") as masterJSON:
+with open("cardRatingsTop/master.json", "w") as masterJSON:
     masterJSON.write(json.dumps(master))
