@@ -1,5 +1,6 @@
 # ⚠Only run once a day if you don't want 17lands to complain at you.⚠
 import json
+
 import requests
 
 
@@ -19,9 +20,7 @@ def fetchData(url):
 
 # the url that handles the expansion for the current set
 baseURL = (f'https://www.17lands.com/card_ratings/data?expansion=LTR'
-              '&format=PremierDraft'
-              '&start_date=2023-05-28'
-              '&end_date=2023-07-06')
+           '&format=PremierDraft')
 print(baseURL)
 
 
@@ -57,7 +56,7 @@ print(baseURL)
 # "ATA": "7.53",
 # "OH WR": "51.0%",
 # "# GIH": "27743",
-# "GIH WR": "54.7%",
+# "GD WR": "54.7%",
 # "IWD": "2.0pp"
 # }
 def processData(data):
@@ -74,6 +73,7 @@ def processData(data):
         cardAlternate["Name"] = card["name"]
         cardAlternate["Color"] = card["color"]
         cardAlternate["Rarity"] = card["rarity"]
+        cardAlternate["# GIH"] = card["ever_drawn_game_count"]
         cardAlternate["OH WR"] = ""
         cardAlternate["GIH WR"] = ""
         cardAlternate["ATA"] = ""
@@ -90,23 +90,23 @@ def processData(data):
         # round to 1 decimal point for OH WR and GIH
         # WR and add %
         if (card["opening_hand_win_rate"]):
-            cardAlternate["OH WR"] = str(round(card["opening_hand_win_rate"]*100, 1)) + "%"
+            cardAlternate["OH WR"] = str(
+                round(card["opening_hand_win_rate"] * 100, 1)) + "%"
             OH_WRs.append(float(cardAlternate["OH WR"][:-1]))
-        if (card["ever_drawn_win_rate"]):
-            cardAlternate["GIH WR"] = str(round(card["ever_drawn_win_rate"]*100, 1)) + "%"
-            GIH_WRs.append(float(cardAlternate["GIH WR"][:-1]))
+        if (card["drawn_win_rate"]):
+            cardAlternate["GD WR"] = str(
+                round(card["drawn_win_rate"] * 100, 1)) + "%"
+            GIH_WRs.append(float(cardAlternate["GD WR"][:-1]))
 
         # round to 1 decimal point for IWD and add
         # pp
         if (card["drawn_improvement_win_rate"]):
-            cardAlternate["IWD"] = str(round(card["drawn_improvement_win_rate"]*100, 1)) + "pp"
+            cardAlternate["IWD"] = str(
+                round(card["drawn_improvement_win_rate"] * 100, 1)) + "pp"
             IWDs.append(float(cardAlternate["IWD"][:-2]))
         cardData[card["name"]] = cardAlternate
 
     # calculate the means (μ) and standard deviations (σ)
-    print(OH_WRs)
-    print(GIH_WRs)
-    print(IWDs)
     OH_WRμ = 0
     for sample in OH_WRs:
         OH_WRμ += sample
@@ -122,17 +122,17 @@ def processData(data):
 
     OH_WRσ = 0
     for sample in OH_WRs:
-        OH_WRσ += (sample - OH_WRμ)**2
+        OH_WRσ += (sample - OH_WRμ) ** 2
     OH_WRσ /= len(OH_WRs)
     OH_WRσ **= 0.5
     GIH_WRσ = 0
     for sample in GIH_WRs:
-        GIH_WRσ += (sample - GIH_WRμ)**2
+        GIH_WRσ += (sample - GIH_WRμ) ** 2
     GIH_WRσ /= len(GIH_WRs)
     GIH_WRσ **= 0.5
     IWDσ = 0
     for sample in IWDs:
-        IWDσ += (sample - IWDμ)**2
+        IWDσ += (sample - IWDμ) ** 2
     IWDσ /= len(IWDs)
     IWDσ **= 0.5
 
@@ -145,12 +145,36 @@ def processData(data):
                               "GIH WR": GIH_WRStats,
                               "IWD": IWDStats}
 
-    return json.dumps(result)
+    return result
 
 
-with open("cardRatingsAuto/all.json", "w") as cardDataJSON:
-    data = fetchData(baseURL)
-    cardDataJSON.write(processData(data))
+master = {}
+
+
+# puts data into a master json
+def processDataToMaster(colorPair, data, originalMaster):
+    newMaster = originalMaster
+
+    makeNewCards = False
+    if not list(newMaster.keys()):
+        makeNewCards = True
+
+    print(makeNewCards)
+
+    for cardName, cardData in data["cardData"].items():
+        if makeNewCards:
+            newMaster[cardName] = {}
+        newMaster[cardName]["ALSA"] = cardData["ALSA"]
+        newMaster[cardName]["name"] = cardName
+        newMaster[cardName][colorPair] = {
+            "GIH WR": cardData["GIH WR"],
+            "OH WR": cardData["OH WR"],
+            "IWD": cardData["IWD"],
+            "# GIH": cardData["# GIH"]
+        }
+
+    return newMaster
+
 
 # the additions list is a list of strings to add to the url. the base url
 # is handled first.
@@ -161,16 +185,27 @@ additions = ["&colors=WU", "&colors=WB", "&colors=WR", "&colors=WG",
              "&colors=RG"  # R color pairs
              ]
 
+master = {}
+
 for addition in additions:
     totalURL = baseURL + addition
-    print(totalURL)
+    print(f'🍊 {totalURL}')
     # print color pair:
     colorPair = addition[-2:]
     print(colorPair)
 
     with open(f"cardRatingsAuto/{colorPair}.json", "w") as cardDataJSON:
         data = fetchData(totalURL)
-        cardDataJSON.write(processData(data))
+        processedData = processData(data)
+        cardDataJSON.write(json.dumps(processedData))
+        master = processDataToMaster(colorPair, processedData, master)
 
+print(f'🍎 {baseURL}')
+with open("cardRatingsAuto/all.json", "w") as cardDataJSON:
+    data = fetchData(baseURL)
+    processedData = processData(data)
+    cardDataJSON.write(json.dumps(processedData))
+    master = processDataToMaster("all", processedData, master)
 
-
+with open("cardRatingsAuto/master.json", "w") as masterJSON:
+    masterJSON.write(json.dumps(master))

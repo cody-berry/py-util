@@ -56,11 +56,11 @@ def calculateGrade(zScore):
     if zScore > 3.5:
         result = "SS"
     # S range
-    if zScore > 3:
+    if zScore > (3.5 - 1 / 3):
         result = "S+"
-    elif zScore > 2.75:
+    elif zScore > (2.5 + 1 / 3):
         result = "S "
-    elif zScore > 2.50:
+    elif zScore > 2.5:
         result = "S-"
     # A range
     elif zScore > (2.5 - 1 / 3):
@@ -309,6 +309,7 @@ while True:
 
     sortedCards = sorted(cardsSelected, key=functools.cmp_to_key(compareCards))
     for card in sortedCards:
+        print("🍓")
         print(card["Name"])
 
     for card in sortedCards:
