@@ -115,7 +115,6 @@ with open("./cardRatingsAuto/all.json", "r") as jsonFile:
     cardData = jsonData["cardData"]
 
     # calculate the mean
-    # data length needed to account for not enough data
     meanGIH = jsonData["generalStats"]["OH WR"]["μ"]
     meanOH = jsonData["generalStats"]["GIH WR"]["μ"]
     meanIWD = jsonData["generalStats"]["IWD"]["μ"]
@@ -273,7 +272,7 @@ while True:
 
     # gather all the cards so that we can sort them
     cardsSelected = []
-    with open(f"{colorPair}.json", "r") as data:
+    with open(f"cardRatingsAuto/{colorPair}.json", "r") as data:
         data = json.load(data)
         for card in cards:
             bestMatch = process.extractOne(card, cardNames)

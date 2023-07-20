@@ -148,9 +148,6 @@ def processData(data):
     return result
 
 
-master = {}
-
-
 # puts data into a master json
 def processDataToMaster(colorPair, data, originalMaster):
     newMaster = originalMaster
@@ -186,6 +183,7 @@ additions = ["&colors=WU", "&colors=WB", "&colors=WR", "&colors=WG",
              ]
 
 master = {}
+statistics = {}
 
 for addition in additions:
     totalURL = baseURL + addition
@@ -198,6 +196,7 @@ for addition in additions:
         data = fetchData(totalURL)
         processedData = processData(data)
         cardDataJSON.write(json.dumps(processedData))
+        statistics[colorPair] = processedData["generalStats"]
         master = processDataToMaster(colorPair, processedData, master)
 
 print(f'🍊 {baseURL}')
@@ -205,7 +204,11 @@ with open("cardRatingsTop/all.json", "w") as cardDataJSON:
     data = fetchData(baseURL)
     processedData = processData(data)
     cardDataJSON.write(json.dumps(processedData))
+    statistics["all"] = processedData["generalStats"]
     master = processDataToMaster("all", processedData, master)
 
 with open("cardRatingsTop/master.json", "w") as masterJSON:
-    masterJSON.write(json.dumps(master))
+    json.dump(master, masterJSON)
+
+with open("cardRatingsTop/statistics.json", "w") as statisticsJSON:
+    json.dump(statistics, statisticsJSON)
