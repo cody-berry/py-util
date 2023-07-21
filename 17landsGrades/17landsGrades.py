@@ -133,17 +133,12 @@ with open("./cardRatingsAuto/all.json", "r") as jsonFile:
             # calculate and set zScores and grades for GIH WR% (game in hand
             # winrate), OH WR% (opening hand winrate), and IWD (improvement
             # when drawn).
-            zScoreGIH = (float(card["GIH WR"][:-1]) - meanGIH) / stdevGIH
 
-            gradeGIH = calculateGrade(zScoreGIH)
+            gradeGIH = calculateGrade(card["zScoreGIH"])
 
-            zScoreOH = (float(card["OH WR"][:-1]) - meanOH) / stdevOH
+            gradeOH = calculateGrade(card["zScoreOH"])
 
-            gradeOH = calculateGrade(zScoreOH)
-
-            zScoreIWD = (float(card["IWD"][:-2]) - meanIWD) / stdevIWD
-
-            gradeIWD = calculateGrade(zScoreIWD)
+            gradeIWD = calculateGrade(card["zScoreIWD"])
 
             # space properly so that if there is a negative in the IWD, it
             # doesn't matter even though a negative takes up a character
@@ -153,9 +148,9 @@ with open("./cardRatingsAuto/all.json", "r") as jsonFile:
                       gradeIWD, card["zScoreIWD"], card["IWD"], "  ",
                       card["Name"])
             else:
-                print(gradeGIH, zScoreGIH, card["GIH WR"], " ",
-                      gradeOH, zScoreOH, card["OH WR"], " ",
-                      gradeIWD, zScoreIWD, card["IWD"], " ",
+                print(gradeGIH, card["zScoreGIH"], card["GIH WR"], " ",
+                      gradeOH, card["zScoreOH"], card["OH WR"], " ",
+                      gradeIWD, card["zScoreIWD"], card["IWD"], " ",
                       card["Name"])
 
         else:
@@ -257,9 +252,6 @@ while True:
             print("— If you type '!' as the first character and there are no ';"
                   + "'s, it will show the oracle text.")
 
-        # print the table for every card
-        print("GIH WR%           OH WR%            IWD                name")
-
     # no matter how many cards there are, if the third character is ":",
     # set the color pair to the combination of the first and second
     # chars if it's in WU, UB, BR, RG, GW, WR, RU, UG, GB, and BW.
@@ -272,12 +264,13 @@ while True:
 
     # gather all the cards so that we can sort them
     cardsSelected = []
-    with open(f"cardRatingsAuto/{colorPair}.json", "r") as data:
+    with open(f"cardRatingsAuto/master.json", "r") as data:
         data = json.load(data)
         for card in cards:
             bestMatch = process.extractOne(card, cardNames)
             cardName = bestMatch[0]
-            card = data[cardName]
+            card = data[cardName][colorPair]
+            card["Name"] = cardName
             cardsSelected.append(card)
 
     # sort the cards by gih wr% by importing functools, making a
@@ -311,23 +304,36 @@ while True:
         print("🍓")
         print(card["Name"])
 
+    # print the table for every card
+    print("GIH WR%           OH WR%            IWD                name")
+
     for card in sortedCards:
-        cardName = card["Name"]
-        if card["GIH WR"] and card["OH WR"]:
+        if card["OH WR"] and card["IWD"]:
+            # calculate and set zScores and grades for GIH WR% (game in hand
+            # winrate), OH WR% (opening hand winrate), and IWD (improvement
+            # when drawn).
+
+            gradeGIH = calculateGrade(card["zScoreGIH"])
+
+            gradeOH = calculateGrade(card["zScoreOH"])
+
+            gradeIWD = calculateGrade(card["zScoreIWD"])
+
             # space properly so that if there is a negative in the IWD, it
             # doesn't matter even though a negative takes up a character
-            if float(card["IWD"][:-2]) > 0:
-                print(card["gradeGIH"], card["zScoreGIH"], card["GIH WR"], " ",
-                      card["gradeOH"], card["zScoreOH"], card["OH WR"], " ",
-                      card["gradeIWD"], card["zScoreIWD"], card["IWD"], "  ",
+            if (float(card["IWD"][:-2]) > 0):
+                print(gradeGIH, card["zScoreGIH"], card["GIH WR"], " ",
+                      gradeOH, card["zScoreOH"], card["OH WR"], " ",
+                      gradeIWD, card["zScoreIWD"], card["IWD"], "  ",
                       card["Name"])
             else:
-                print(card["gradeGIH"], card["zScoreGIH"], card["GIH WR"], " ",
-                      card["gradeOH"], card["zScoreOH"], card["OH WR"], " ",
-                      card["gradeIWD"], card["zScoreIWD"], card["IWD"], " ",
+                print(gradeGIH, card["zScoreGIH"], card["GIH WR"], " ",
+                      gradeOH, card["zScoreOH"], card["OH WR"], " ",
+                      gradeIWD, card["zScoreIWD"], card["IWD"], " ",
                       card["Name"])
+
         else:
-            print("Insufficient data for", card["Name"])
+            print("Inadequate data for", card["Name"])
             print("GIH WR%           OH WR%            IWD                name")
         if showOracleText:
             # show all relevant information

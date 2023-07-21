@@ -140,6 +140,17 @@ def processData(data):
     GIH_WRStats = {"μ": GIH_WRμ, "σ": GIH_WRσ}
     IWDStats = {"μ": IWDμ, "σ": IWDσ}
 
+    for cardName, card in cardData.items():
+        if card["GIH WR"]:
+            cardData[cardName]["zScoreGIH"] = (float(card["GIH WR"][:-1]) - GIH_WRμ)/GIH_WRσ
+            cardData[cardName]["zScoreGIH"] = float(str(cardData[cardName]["zScoreGIH"])[:5])
+        if card["OH WR"]:
+            cardData[cardName]["zScoreOH"] = (float(card["OH WR"][:-1]) - OH_WRμ)/OH_WRσ
+            cardData[cardName]["zScoreOH"] = float(str(cardData[cardName]["zScoreOH"])[:5])
+        if card["IWD"]:
+            cardData[cardName]["zScoreIWD"] = (float(card["IWD"][:-2]) - IWDμ)/IWDσ
+            cardData[cardName]["zScoreIWD"] = float(str(cardData[cardName]["zScoreIWD"])[:5])
+
     result["cardData"] = cardData
     result["generalStats"] = {"OH WR": OH_WRStats,
                               "GIH WR": GIH_WRStats,
