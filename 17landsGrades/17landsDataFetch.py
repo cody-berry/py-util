@@ -211,7 +211,7 @@ for addition in additions:
     colorPair = addition[-2:]
     print(colorPair)
 
-    with open(f"cardRatingsAuto/{colorPair}.json", "w") as cardDataJSON:
+    with open(f"cardRatingsAll/{colorPair}.json", "w") as cardDataJSON:
         data = fetchData(totalURL)
         processedData = processData(data)
         cardDataJSON.write(json.dumps(processedData))
@@ -219,15 +219,15 @@ for addition in additions:
         master = processDataToMaster(colorPair, processedData, master)
 
 print(f'🍓 {baseURL}')
-with open("cardRatingsAuto/all.json", "w") as cardDataJSON:
+with open("cardRatingsAll/all.json", "w") as cardDataJSON:
     data = fetchData(baseURL)
     processedData = processData(data)
     cardDataJSON.write(json.dumps(processedData))
     statistics["all"] = processedData["generalStats"]
     master = processDataToMaster("all", processedData, master)
 
-with open("cardRatingsAuto/master.json", "w") as masterJSON:
+with open("cardRatingsAll/master.json", "w") as masterJSON:
     json.dump(master, masterJSON)
 
-with open("cardRatingsAuto/statistics.json", "w") as statisticsJSON:
+with open("cardRatingsAll/statistics.json", "w") as statisticsJSON:
     json.dump(statistics, statisticsJSON)

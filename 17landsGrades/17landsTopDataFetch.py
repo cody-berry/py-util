@@ -141,6 +141,9 @@ def processData(data):
     IWDStats = {"μ": IWDμ, "σ": IWDσ}
 
     for cardName, card in cardData.items():
+        cardData[cardName]["zScoreGIH"] = 0
+        cardData[cardName]["zScoreOH"] = 0
+        cardData[cardName]["zScoreIWD"] = 0
         if card["GIH WR"]:
             cardData[cardName]["zScoreGIH"] = (float(card["GIH WR"][:-1]) - GIH_WRμ)/GIH_WRσ
             cardData[cardName]["zScoreGIH"] = float(str(cardData[cardName]["zScoreGIH"])[:5])
@@ -167,17 +170,19 @@ def processDataToMaster(colorPair, data, originalMaster):
     if not list(newMaster.keys()):
         makeNewCards = True
 
-    print(makeNewCards)
-
     for cardName, cardData in data["cardData"].items():
         if makeNewCards:
             newMaster[cardName] = {}
         newMaster[cardName]["ALSA"] = cardData["ALSA"]
         newMaster[cardName]["name"] = cardName
+        print(cardData)
         newMaster[cardName][colorPair] = {
             "GIH WR": cardData["GIH WR"],
+            "zScoreGIH": cardData["zScoreGIH"],
             "OH WR": cardData["OH WR"],
+            "zScoreOH": cardData["zScoreOH"],
             "IWD": cardData["IWD"],
+            "zScoreIWD": cardData["zScoreIWD"],
             "# GIH": cardData["# GIH"]
         }
 
