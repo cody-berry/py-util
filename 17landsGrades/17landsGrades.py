@@ -210,11 +210,25 @@ else:
 # import fuzzywuzzy
 from fuzzywuzzy import process
 
+previousUserInput = ""
+
 while True:
     delimiter = ";"  # the delimiter between every card
 
     # input card name(s) with a delimiter
     inputCards = input("Enter card name (input 'instruction' for instructions list)→ ")
+
+    # if inputCards is empty, set it to the previous user input, but add/remove
+    # a ~ if necessary.
+    if inputCards == "":
+        inputCards = (previousUserInput + ".")[:-1] # create a copy
+
+        if inputCards[0] == '~':
+            inputCards = inputCards[1:]
+        else:
+            inputCards = f"~{inputCards}"
+        print(f"Setting user input to \"{inputCards}\"")
+
     cards = []
     # iterate through every character. if it isn't a space and it isn't the
     # delimiter, add it to the card string. if it's a space, don't do anything.
@@ -268,8 +282,9 @@ while True:
     # set the players to top. otherwise, set it to all.
     playerGroup = "All"
     if inputCards[0] == "~":
-        inputCards = inputCards[1:]
         playerGroup = "Top"
+
+    print(f"Player group: {playerGroup.lower()}")
 
     # no matter how many cards there are, if the third character is ":",
     # set the color pair to the combination of the first and second
@@ -288,7 +303,6 @@ while True:
 
     with open(f"cardRatings{playerGroup}/master.json", "r") as data:
         data = json.load(data)
-        print(colorPair)
         if (len(cards) == 1) and (colorPair == "all"):
             cardName = process.extractOne(cards[0], cardNames)[0]
             singleCard = True
@@ -304,7 +318,7 @@ while True:
                 cardName = bestMatch[0]
                 card = data[cardName][colorPair]
                 card["Name"] = cardName
-         gi       cardsSelected.append(card)
+                cardsSelected.append(card)
 
     # sort the cards by gih wr% by importing functools, making a
     # compare function, and then sorting using that.
@@ -346,6 +360,8 @@ while True:
     # print the table for every card
     print("     n | GIH WR%        | OH WR%         | IWD            |",
           "color pair" if singleCard else "name")
+
+
 
     for card in sortedCards:
         if (card["# GIH"] > 100):
@@ -389,5 +405,8 @@ while True:
         print(f"\n{cardName} {scryfallCardData['mana_cost']}")
         print(scryfallCardData["type_line"])
         print(scryfallCardData["oracle_text"])
-        print("")
+        print("")  # newline
+
+    previousUserInput = inputCards
+    print(f"previousUserInput is now \"{previousUserInput}\"")
 
