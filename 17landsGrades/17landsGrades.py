@@ -49,28 +49,6 @@
 # print("standard deviation from numpy: ", np.std(distribution))
 
 import ANSI
-print(f"{ANSI.bold}Bold{ANSI.reset} "
-      f"{ANSI.faint}Faint{ANSI.reset} "
-      f"{ANSI.italic}Italic{ANSI.reset} "
-      f"{ANSI.underline}Underline{ANSI.reset} "
-      f"{ANSI.strikethrough}Strikethrough{ANSI.reset} Reset")
-print(f"Foreground: {ANSI.black}B{ANSI.reset}{ANSI.red}R{ANSI.reset}{ANSI.yellow}Y{ANSI.reset}"
-      f"{ANSI.green}G{ANSI.reset}{ANSI.blue}U{ANSI.reset}{ANSI.indigo}I{ANSI.reset}{ANSI.cyan}C{ANSI.reset}"
-      f"{ANSI.magenta}M{ANSI.reset}{ANSI.white}W{ANSI.resetForeground} ResetForeground")
-print(f"Background: "
-      f"{ANSI.blackBackground}B{ANSI.reset}"
-      f"{ANSI.redBackground}R{ANSI.reset}"
-      f"{ANSI.yellowBackground}Y{ANSI.reset}"
-      f"{ANSI.greenBackground}G{ANSI.reset}"
-      f"{ANSI.blueBackground}U{ANSI.reset}"
-      f"{ANSI.indigoBackground}I{ANSI.reset}"
-      f"{ANSI.cyanBackground}C{ANSI.reset}"
-      f"{ANSI.magentaBackground}M{ANSI.reset}"
-      f"{ANSI.whiteBackground}W{ANSI.resetBackground} ResetBackground"
-      )
-print(f"Mixing: "
-      f"{ANSI.red}{ANSI.whiteBackground}RedForegroundWhiteBackground{ANSI.reset} "
-      f"{ANSI.green}{ANSI.blueBackground}GreenForegroundBlueBackground{ANSI.reset}")
 
 
 # calculate the grade based on the z-score
@@ -79,48 +57,48 @@ def calculateGrade(zScore):
 
     # Special: SS
     if zScore > 3.5:
-        result = "SS"
+        result = f"{ANSI.indigo}SS{ANSI.reset}"
     # S range
     if zScore > (3.5 - 1 / 3):
-        result = "S+"
+        result = f"{ANSI.blue}S+{ANSI.reset}"
     elif zScore > (2.5 + 1 / 3):
-        result = "S "
+        result = f"{ANSI.blue}S {ANSI.reset}"
     elif zScore > 2.5:
-        result = "S-"
+        result = f"{ANSI.blue}S-{ANSI.reset}"
     # A range
     elif zScore > (2.5 - 1 / 3):
-        result = "A+"
+        result = f"{ANSI.blue}A+{ANSI.reset}"
     elif zScore > (1.5 + 1 / 3):
-        result = "A "
+        result = f"{ANSI.blue}A {ANSI.reset}"
     elif zScore > 1.5:
-        result = "A-"
+        result = f"{ANSI.blue}A-{ANSI.reset}"
     # B range
     elif zScore > (1.5 - 1 / 3):
-        result = "B+"
+        result = f"{ANSI.green}B+{ANSI.reset}"
     elif zScore > (0.5 + 1 / 3):
-        result = "B "
+        result = f"{ANSI.green}B {ANSI.reset}"
     elif zScore > 0.5:
-        result = "B-"
+        result = f"{ANSI.green}B-{ANSI.reset}"
     # C range
     elif zScore > (0.5 - 1 / 3):
-        result = "C+"
+        result = f"{ANSI.yellow}C+{ANSI.reset}"
     elif zScore > (-0.5 + 1 / 3):
-        result = "C "
+        result = f"{ANSI.yellow}C {ANSI.reset}"
     elif zScore > -0.5:
-        result = "C-"
+        result = f"{ANSI.yellow}C-{ANSI.reset}"
     # D range
     elif zScore > (-0.5 - 1 / 3):
-        result = "D+"
+        result = f"{ANSI.orange}D+{ANSI.reset}"
     elif zScore > (-1.5 + 1 / 3):
-        result = "D "
+        result = f"{ANSI.orange}D {ANSI.reset}"
     elif zScore > -1.5:
-        result = "D-"
+        result = f"{ANSI.orange}D-{ANSI.reset}"
     # E range
     elif zScore > -2:
-        result = "E "
+        result = f"{ANSI.red}E {ANSI.reset}"
     # F range
     else:
-        result = "F "
+        result = f"{ANSI.magenta}F {ANSI.reset}"
 
     return result
 
@@ -157,7 +135,7 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
     stdevIWD = jsonData["generalStats"]["IWD"]["σ"]
 
     print("Overall data:")
-    print("     n | GIH WR%        | OH WR%         | IWD            | name")
+    print(f"     {ANSI.white}n{ANSI.reset} | GIH WR%        | OH WR%         | IWD            | name")
 
     # print the card data
     for cardName, card in cardData.items():
@@ -178,21 +156,21 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
             # space properly so that if there is a negative in the IWD, it
             # doesn't matter even though a negative takes up a character
             if (float(card["IWD"][:-2]) > 0):
-                print(f"{card['# GIH']:6}", "|",
-                      gradeGIH, zScoreGIH, card["GIH WR"], "|",
-                      gradeOH, zScoreOH, card["OH WR"], "|",
-                      gradeIWD, zScoreIWD, " " + padEnd(card["IWD"][:-2], 4), "|",
+                print(f"{ANSI.white}{card['# GIH']:6}{ANSI.reset}", "|",
+                      gradeGIH, ANSI.white, zScoreGIH, ANSI.reset, card["GIH WR"], "|",
+                      gradeOH, ANSI.white, zScoreOH, ANSI.reset, card["OH WR"], "|",
+                      gradeIWD, ANSI.white, zScoreIWD, ANSI.reset, " " + padEnd(card["IWD"][:-2], 4), "|",
                       card["Name"])
             else:
-                print(f"{card['# GIH']:6}", "|",
-                      gradeGIH, zScoreGIH, card["GIH WR"], "|",
-                      gradeOH, zScoreOH, card["OH WR"], "|",
-                      gradeIWD, zScoreIWD, padEnd(card["IWD"][:-2], 5), "|",
+                print(f"{ANSI.white}{card['# GIH']:6}{ANSI.reset}", "|",
+                      gradeGIH, ANSI.white, zScoreGIH, ANSI.reset, card["GIH WR"], "|",
+                      gradeOH, ANSI.white, zScoreOH, ANSI.reset, card["OH WR"], "|",
+                      gradeIWD, ANSI.white, zScoreIWD, ANSI.reset, padEnd(card["IWD"][:-2], 5), "|",
                       card["Name"])
 
         else:
             print("Inadequ|te data for", card["Name"])
-            print("     n | GIH WR%        | OH WR%         | IWD            | name")
+            print(f"     {ANSI.white}n{ANSI.reset} | GIH WR%        | OH WR%         | IWD            | name")
 
     cardNames = list(cardData.keys())
 
@@ -407,15 +385,15 @@ while True:
             # doesn't matter even though a negative takes up a character
             if (float(card["IWD"][:-2]) >= 0):
                 print(f"{card['# GIH']:6}", "|",
-                      gradeGIH, zScoreGIH, card["GIH WR"], "|",
-                      gradeOH, zScoreOH, card["OH WR"], "|",
-                      gradeIWD, zScoreIWD, " " + padEnd(card["IWD"][:-2], 4), "|",
+                      gradeGIH, ANSI.white, zScoreGIH, ANSI.reset, card["GIH WR"], "|",
+                      gradeOH, ANSI.white, zScoreOH, ANSI.reset, card["OH WR"], "|",
+                      gradeIWD, ANSI.white, zScoreIWD, ANSI.reset, " " + padEnd(card["IWD"][:-2], 4), "|",
                       card["colorPair"] if singleCard else card["Name"])
             else:
                 print(f"{card['# GIH']:6}", "|",
-                      gradeGIH, zScoreGIH, card["GIH WR"], "|",
-                      gradeOH, zScoreOH, card["OH WR"], "|",
-                      gradeIWD, zScoreIWD, padEnd(card["IWD"][:-2], 5), "|",
+                      gradeGIH, ANSI.white, zScoreGIH, ANSI.reset, card["GIH WR"], "|",
+                      gradeOH, ANSI.white, zScoreOH, ANSI.reset, card["OH WR"], "|",
+                      gradeIWD, ANSI.white, zScoreIWD, ANSI.reset, padEnd(card["IWD"][:-2], 5), "|",
                       card["colorPair"] if singleCard else card["Name"])
 
         else:
