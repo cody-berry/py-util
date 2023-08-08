@@ -1,7 +1,7 @@
 # Testing section
 
 # Section 1: Testing mean on a distribution.
-import numpy as np
+# import numpy as np
 
 
 # distribution = []
@@ -47,6 +47,31 @@ import numpy as np
 #
 # print("standard deviation: ", stDev)
 # print("standard deviation from numpy: ", np.std(distribution))
+
+import ANSI
+print(f"{ANSI.bold}Bold{ANSI.reset} "
+      f"{ANSI.faint}Faint{ANSI.reset} "
+      f"{ANSI.italic}Italic{ANSI.reset} "
+      f"{ANSI.underline}Underline{ANSI.reset} "
+      f"{ANSI.strikethrough}Strikethrough{ANSI.reset} Reset")
+print(f"Foreground: {ANSI.black}B{ANSI.reset}{ANSI.red}R{ANSI.reset}{ANSI.yellow}Y{ANSI.reset}"
+      f"{ANSI.green}G{ANSI.reset}{ANSI.blue}U{ANSI.reset}{ANSI.indigo}I{ANSI.reset}{ANSI.cyan}C{ANSI.reset}"
+      f"{ANSI.magenta}M{ANSI.reset}{ANSI.white}W{ANSI.resetForeground} ResetForeground")
+print(f"Background: "
+      f"{ANSI.blackBackground}B{ANSI.reset}"
+      f"{ANSI.redBackground}R{ANSI.reset}"
+      f"{ANSI.yellowBackground}Y{ANSI.reset}"
+      f"{ANSI.greenBackground}G{ANSI.reset}"
+      f"{ANSI.blueBackground}U{ANSI.reset}"
+      f"{ANSI.indigoBackground}I{ANSI.reset}"
+      f"{ANSI.cyanBackground}C{ANSI.reset}"
+      f"{ANSI.magentaBackground}M{ANSI.reset}"
+      f"{ANSI.whiteBackground}W{ANSI.resetBackground} ResetBackground"
+      )
+print(f"Mixing: "
+      f"{ANSI.red}{ANSI.whiteBackground}RedForegroundWhiteBackground{ANSI.reset} "
+      f"{ANSI.green}{ANSI.blueBackground}GreenForegroundBlueBackground{ANSI.reset}")
+
 
 # calculate the grade based on the z-score
 def calculateGrade(zScore):
