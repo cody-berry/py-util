@@ -224,7 +224,7 @@ while True:
     # if inputCards is empty, set it to the previous user input, but add/remove
     # a ~ if necessary.
     if inputCards == "":
-        inputCards = (previousUserInput + ".")[:-1] # create a copy
+        inputCards = previousUserInput + "."  # create a copy
 
         if inputCards[0] == '~':
             inputCards = inputCards[1:]
@@ -298,6 +298,9 @@ while True:
         if inputCards[:2].upper() in ["WU", "UB", "BR", "RG", "WG",
                               "WR", "UR", "UG", "BG", "WB"]:
             colorPair = inputCards[:2].upper()
+
+    if inputCards[3:] == "":
+
 
     # gather all the cards so that we can sort them
     cardsSelected = []
