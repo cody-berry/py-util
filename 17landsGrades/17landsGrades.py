@@ -118,7 +118,6 @@ stdevIWD = 0
 
 # print the name and game in hand win rate of each card
 with open("cardRatingsAll/all.json", "r") as jsonFile:
-    print(jsonFile)
     jsonData = json.load(jsonFile)
     cardData = jsonData["cardData"]
 
@@ -133,7 +132,7 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
     stdevIWD = jsonData["generalStats"]["IWD"]["σ"]
 
     print("Overall data:")
-    print("GIH WR%        | OH WR%         | IWD            | name")
+    print("     n | GIH WR%        | OH WR%         | IWD            | name")
 
     # print the card data
     for cardName, card in cardData.items():
@@ -154,19 +153,21 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
             # space properly so that if there is a negative in the IWD, it
             # doesn't matter even though a negative takes up a character
             if (float(card["IWD"][:-2]) > 0):
-                print(gradeGIH, zScoreGIH, card["GIH WR"], "|",
+                print(f"{card['# GIH']:6}", "|",
+                      gradeGIH, zScoreGIH, card["GIH WR"], "|",
                       gradeOH, zScoreOH, card["OH WR"], "|",
                       gradeIWD, zScoreIWD, " " + padEnd(card["IWD"][:-2], 4), "|",
                       card["Name"])
             else:
-                print(gradeGIH, zScoreGIH, card["GIH WR"], "|",
+                print(f"{card['# GIH']:6}", "|",
+                      gradeGIH, zScoreGIH, card["GIH WR"], "|",
                       gradeOH, zScoreOH, card["OH WR"], "|",
                       gradeIWD, zScoreIWD, padEnd(card["IWD"][:-2], 5), "|",
                       card["Name"])
 
         else:
-            print("Inadequate data for", card["Name"])
-            print("GIH WR%        | OH WR%         | IWD            | name")
+            print("Inadequ|te data for", card["Name"])
+            print("     n | GIH WR%        | OH WR%         | IWD            | name")
 
     cardNames = list(cardData.keys())
 
@@ -276,54 +277,75 @@ while True:
     # otherwise, set the color pair to "all".
     colorPair = "all"
     if inputCards[2] == ":":
-        if inputCards[:2] in ["WU", "UB", "BR", "RG", "WG",
+        if inputCards[:2].upper() in ["WU", "UB", "BR", "RG", "WG",
                               "WR", "UR", "UG", "BG", "WB"]:
-            colorPair = inputCards[:2]
+            colorPair = inputCards[:2].upper()
 
     # gather all the cards so that we can sort them
     cardsSelected = []
+
+    singleCard = False
+
     with open(f"cardRatings{playerGroup}/master.json", "r") as data:
         data = json.load(data)
-        for card in cards:
-            bestMatch = process.extractOne(card, cardNames)
-            cardName = bestMatch[0]
-            card = data[cardName][colorPair]
-            card["Name"] = cardName
-            cardsSelected.append(card)
+        print(colorPair)
+        if (len(cards) == 1) and (colorPair == "all"):
+            cardName = process.extractOne(cards[0], cardNames)[0]
+            singleCard = True
+            for colorPair in ['WU', 'UB', 'BR', 'RG', 'WG',
+                              'WR', 'UR', 'UG', 'BG', 'WB']:
+                card = data[cardName][colorPair]
+                card["colorPair"] = colorPair
+                card["Name"] = cardName
+                cardsSelected.append(card)
+        else:
+            for card in cards:
+                bestMatch = process.extractOne(card, cardNames)
+                cardName = bestMatch[0]
+                card = data[cardName][colorPair]
+                card["Name"] = cardName
+         gi       cardsSelected.append(card)
 
     # sort the cards by gih wr% by importing functools, making a
     # compare function, and then sorting using that.
     import functools
 
     def compareCards(card1, card2):
+        # handles not enough sample size
+        if card1["# GIH"] < 100 or card2["# GIH"] < 100:
+            return 0
+
         # handles ever in hand winrate
-        if float(card1["GIH WR"][:-1]) > float(card2["GIH WR"][:-1]):
+        if card1["zScoreGIH"] > card2["zScoreGIH"]:
             return -1
-        if float(card1["GIH WR"][:-1]) < float(card2["GIH WR"][:-1]):
+        if card1["zScoreGIH"] < card2["zScoreGIH"]:
             return 1
         else:
             # handles opening hand winrate
-            if float(card1["OH WR"][:-1]) > float(card2["OH WR"][:-1]):
+            if card1["zScoreOH"] > card2["zScoreOH"]:
                 return -1
-            if float(card1["OH WR"][:-1]) < float(card2["OH WR"][:-1]):
+            if card1["zScoreOH"] < card2["zScoreOH"]:
                 return 1
             else:
                 # handles improvement when drawn
-                if float(card1["IWD"][:-2]) > float(card2["IWD"][:-2]):
+                if card1["zScoreIWD"] > card2["zScoreIWD"]:
                     return -1
-                if float(card1["IWD"][:-2]) < float(card2["IWD"][:-2]):
+                if card1["zScoreIWD"] < card2["zScoreIWD"]:
                     return 1
                 else:
                     # if all are the same, maintain the order
                     return 0
 
     sortedCards = sorted(cardsSelected, key=functools.cmp_to_key(compareCards))
-    for card in sortedCards:
+    if (singleCard): print(f"🍓 {cardName}")
+    else:
         print("🍓")
-        print(card["Name"])
+        for card in sortedCards:
+            print(card["Name"])
 
     # print the table for every card
-    print("GIH WR%        | OH WR%         | IWD            | name")
+    print("     n | GIH WR%        | OH WR%         | IWD            |",
+          "color pair" if singleCard else "name")
 
     for card in sortedCards:
         if (card["# GIH"] > 100):
@@ -342,24 +364,30 @@ while True:
 
             # space properly so that if there is a negative in the IWD, it
             # doesn't matter even though a negative takes up a character
-            if (float(card["IWD"][:-2]) > 0):
-                print(gradeGIH, zScoreGIH, card["GIH WR"], "|",
+            if (float(card["IWD"][:-2]) >= 0):
+                print(f"{card['# GIH']:6}", "|",
+                      gradeGIH, zScoreGIH, card["GIH WR"], "|",
                       gradeOH, zScoreOH, card["OH WR"], "|",
-                      gradeIWD, zScoreIWD, padEnd(card["IWD"][:-2], 4), "|",
-                      card["Name"])
+                      gradeIWD, zScoreIWD, " " + padEnd(card["IWD"][:-2], 4), "|",
+                      card["colorPair"] if singleCard else card["Name"])
             else:
-                print(gradeGIH, zScoreGIH, card["GIH WR"], "|",
+                print(f"{card['# GIH']:6}", "|",
+                      gradeGIH, zScoreGIH, card["GIH WR"], "|",
                       gradeOH, zScoreOH, card["OH WR"], "|",
                       gradeIWD, zScoreIWD, padEnd(card["IWD"][:-2], 5), "|",
-                      card["Name"])
+                      card["colorPair"] if singleCard else card["Name"])
 
         else:
-            print("Inadequate data for", card["Name"])
-            print("GIH WR%        | OH WR%         | IWD            | name")
-        if showOracleText:
-            # show all relevant information
-            scryfallCardData = scryfallDict[cardName]
-            print(f"\n{cardName} {scryfallCardData['mana_cost']}")
-            print(scryfallCardData["type_line"])
-            print(scryfallCardData["oracle_text"])
+            if not singleCard:
+                print("Inadequ|te data for", card["Name"])
+                print("     n | GIH WR%        | OH WR%         | IWD            |",
+                      "color pair" if singleCard else "name")
+
+    if showOracleText:
+        # show all relevant information
+        scryfallCardData = scryfallDict[cardName]
+        print(f"\n{cardName} {scryfallCardData['mana_cost']}")
+        print(scryfallCardData["type_line"])
+        print(scryfallCardData["oracle_text"])
+        print("")
 

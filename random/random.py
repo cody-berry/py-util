@@ -27,6 +27,4 @@ seed = random()
 print(seed/100)
 while not seed == 244:
     seed = random()
-    print(seed/100)
-
-
+    print(seed1400)
