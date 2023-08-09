@@ -243,20 +243,27 @@ while True:
                                       "WR", "UR", "UG", "BG", "WB"]:
             colorPair = inputCards[:2].upper()
             inputCards = inputCards[3:]
-
-    print(f"🌈 Color pair: {colorPair}")
-    print(inputCards)
     # if inputCards is empty, set it to the previous user input, but add/remove
     # a ~ if necessary.
     if inputCards == "" or inputCards == " ":
         inputCards = previousUserInput
 
         if colorPair == "all":  # only if the color pair wasn't selected
+            colorPair = "all"
+            if inputCards and inputCards[2] == ":":
+                if inputCards[:2].upper() in ["WU", "UB", "BR", "RG", "WG",
+                                              "WR", "UR", "UG", "BG", "WB"]:
+                    colorPair = inputCards[:2].upper()
+                    inputCards = inputCards[3:]
             if inputCards[0] == '~':
                 inputCards = inputCards[1:]
             else:
                 inputCards = f"~{inputCards}"
         print(f"Setting user input to \"{inputCards}\"")
+
+
+    print(inputCards)
+    print(f"🌈 Color pair: {colorPair}")
 
     # set the previous user input to inputCards.
     # if the color pair was set, then there will be an unnecessary residual
@@ -293,9 +300,7 @@ while True:
     if len(cards) == 1:
         if currentCardString == "instruction":
             print("Instruction manual:")
-            print("⚠ Please do not press Enter without anything inside. ⚠")
-            print(
-                "⚠ Please forgive any typos, as this was made in half a month or so. ⚠")
+            print("⚠ Please forgive any typos, as this was made in half a month or so. ⚠")
             print("At the top of the print line, you will see the ratings of "
                   + "all cards, formatted as the last part says.")
             print("Type a number of cards. You can use abbreviations and you "
