@@ -57,61 +57,63 @@ def calculateGrade(zScore):
 
     # Special: SS
     if zScore > 3.5:
-        result = f"{ANSI.indigo}SS{ANSI.reset}"
+        result = f"{ANSI.pureWhite}SS{ANSI.reset}"
     # S range
     if zScore > (3.5 - 1 / 3):
-        result = f"{ANSI.blue}S+{ANSI.reset}"
+        result = f"{ANSI.pureWhite}S+{ANSI.reset}"
     elif zScore > (2.5 + 1 / 3):
-        result = f"{ANSI.blue}S {ANSI.reset}"
+        result = f"{ANSI.pureWhite}S {ANSI.reset}"
     elif zScore > 2.5:
-        result = f"{ANSI.blue}S-{ANSI.reset}"
+        result = f"{ANSI.pureWhite}S-{ANSI.reset}"
     # A range
     elif zScore > (2.5 - 1 / 3):
-        result = f"{ANSI.blue}A+{ANSI.reset}"
+        result = f"{ANSI.pureWhite}A+{ANSI.reset}"
     elif zScore > (1.5 + 1 / 3):
-        result = f"{ANSI.blue}A {ANSI.reset}"
+        result = f"{ANSI.pureWhite}A {ANSI.reset}"
     elif zScore > 1.5:
-        result = f"{ANSI.blue}A-{ANSI.reset}"
+        result = f"{ANSI.pureWhite}A-{ANSI.reset}"
     # B range
     elif zScore > (1.5 - 1 / 3):
-        result = f"{ANSI.green}B+{ANSI.reset}"
+        result = f"{ANSI.pureWhite}B+{ANSI.reset}"
     elif zScore > (0.5 + 1 / 3):
-        result = f"{ANSI.green}B {ANSI.reset}"
+        result = f"{ANSI.pureWhite}B {ANSI.reset}"
     elif zScore > 0.5:
-        result = f"{ANSI.green}B-{ANSI.reset}"
+        result = f"{ANSI.reset}B-"
     # C range
     elif zScore > (0.5 - 1 / 3):
-        result = f"{ANSI.yellow}C+{ANSI.reset}"
+        result = f"{ANSI.reset}C+"
     elif zScore > (-0.5 + 1 / 3):
-        result = f"{ANSI.yellow}C {ANSI.reset}"
+        result = f"{ANSI.reset}C "
     elif zScore > -0.5:
-        result = f"{ANSI.yellow}C-{ANSI.reset}"
+        result = f"{ANSI.reset}C-"
     # D range
     elif zScore > (-0.5 - 1 / 3):
-        result = f"{ANSI.orange}D+{ANSI.reset}"
+        result = f"{ANSI.reset}D+"
     elif zScore > (-1.5 + 1 / 3):
-        result = f"{ANSI.orange}D {ANSI.reset}"
+        result = f"{ANSI.dimWhite}D {ANSI.reset}"
     elif zScore > -1.5:
-        result = f"{ANSI.orange}D-{ANSI.reset}"
+        result = f"{ANSI.dimWhite}D-{ANSI.reset}"
     # E range
     elif zScore > -2:
-        result = f"{ANSI.red}E {ANSI.reset}"
+        result = f"{ANSI.dimWhite}E {ANSI.reset}"
     # F range
     else:
-        result = f"{ANSI.magenta}F {ANSI.reset}"
+        result = f"{ANSI.dimWhite}F {ANSI.reset}"
 
     return result
+
 
 # pads a string with 0s to the right until it reaches the length. it shortens
 # the string if it is too long.
 def padEnd(string, length):
     if len(string) < length:
-        return string + "0"*(length - len(string))
+        return string + "0" * (length - len(string))
     else:
         return string[:length]
 
 
 import json
+
 meanGIH = 0
 meanOH = 0
 meanIWD = 0
@@ -135,7 +137,8 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
     stdevIWD = jsonData["generalStats"]["IWD"]["σ"]
 
     print("Overall data:")
-    print(f"     {ANSI.white}n{ANSI.reset} | GIH WR%        | OH WR%         | IWD            | name")
+    print(
+        f"     {ANSI.dimWhite}n{ANSI.reset} | GIH WR%        | OH WR%         | IWD            | name")
 
     # print the card data
     for cardName, card in cardData.items():
@@ -156,21 +159,28 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
             # space properly so that if there is a negative in the IWD, it
             # doesn't matter even though a negative takes up a character
             if (float(card["IWD"][:-2]) > 0):
-                print(f"{ANSI.white}{card['# GIH']:6}{ANSI.reset}", "|",
-                      gradeGIH, ANSI.white, zScoreGIH, ANSI.reset, card["GIH WR"], "|",
-                      gradeOH, ANSI.white, zScoreOH, ANSI.reset, card["OH WR"], "|",
-                      gradeIWD, ANSI.white, zScoreIWD, ANSI.reset, " " + padEnd(card["IWD"][:-2], 4), "|",
+                print(f"{ANSI.dimWhite}{card['# GIH']:6}{ANSI.reset}", "|",
+                      gradeGIH, ANSI.dimWhite, zScoreGIH, ANSI.reset,
+                      card["GIH WR"], "|",
+                      gradeOH, ANSI.dimWhite, zScoreOH, ANSI.reset,
+                      card["OH WR"], "|",
+                      gradeIWD, ANSI.dimWhite, zScoreIWD, ANSI.reset,
+                      " " + padEnd(card["IWD"][:-2], 4), "|",
                       card["Name"])
             else:
-                print(f"{ANSI.white}{card['# GIH']:6}{ANSI.reset}", "|",
-                      gradeGIH, ANSI.white, zScoreGIH, ANSI.reset, card["GIH WR"], "|",
-                      gradeOH, ANSI.white, zScoreOH, ANSI.reset, card["OH WR"], "|",
-                      gradeIWD, ANSI.white, zScoreIWD, ANSI.reset, padEnd(card["IWD"][:-2], 5), "|",
+                print(f"{ANSI.dimWhite}{card['# GIH']:6}{ANSI.reset}", "|",
+                      gradeGIH, ANSI.dimWhite, zScoreGIH, ANSI.reset,
+                      card["GIH WR"], "|",
+                      gradeOH, ANSI.dimWhite, zScoreOH, ANSI.reset,
+                      card["OH WR"], "|",
+                      gradeIWD, ANSI.dimWhite, zScoreIWD, ANSI.reset,
+                      padEnd(card["IWD"][:-2], 5), "|",
                       card["Name"])
 
         else:
             print("Inadequ|te data for", card["Name"])
-            print(f"     {ANSI.white}n{ANSI.reset} | GIH WR%        | OH WR%         | IWD            | name")
+            print(
+                f"     {ANSI.dimWhite}n{ANSI.reset} | GIH WR%        | OH WR%         | IWD            | name")
 
     cardNames = list(cardData.keys())
 
@@ -201,14 +211,15 @@ if response.status_code == 200:
             data = response.json()
             cards.extend(data['data'])
         else:
-            raise FileNotFoundError(f"Could not load next page. Error code: {response.status_code}")
+            raise FileNotFoundError(
+                f"Could not load next page. Error code: {response.status_code}")
 
     # transform the json list into a json dict
     scryfallDict = {card["name"]: card for card in cards}
     print("Data saved successfully.")
 else:
-    raise FileNotFoundError(f"Could not load scryfall data for {set_code}. Error code: {response.status_code}")
-
+    raise FileNotFoundError(
+        f"Could not load scryfall data for {set_code}. Error code: {response.status_code}")
 
 # import fuzzywuzzy
 from fuzzywuzzy import process
@@ -219,18 +230,44 @@ while True:
     delimiter = ";"  # the delimiter between every card
 
     # input card name(s) with a delimiter
-    inputCards = input("Enter card name (input 'instruction' for instructions list)→ ")
+    inputCards = input(
+        "Enter card name (input 'instruction' for instructions list)→ ")
 
+    # no matter how many cards there are, if the third character is ":",
+    # set the color pair to the combination of the first and second
+    # chars if it's in WU, UB, BR, RG, GW, WR, RU, UG, GB, and BW.
+    # otherwise, set the color pair to "all".
+    colorPair = "all"
+    if inputCards and inputCards[2] == ":":
+        if inputCards[:2].upper() in ["WU", "UB", "BR", "RG", "WG",
+                                      "WR", "UR", "UG", "BG", "WB"]:
+            colorPair = inputCards[:2].upper()
+            inputCards = inputCards[3:]
+
+    print(f"🌈 Color pair: {colorPair}")
+    print(inputCards)
     # if inputCards is empty, set it to the previous user input, but add/remove
     # a ~ if necessary.
-    if inputCards == "":
-        inputCards = previousUserInput + "."  # create a copy
+    if inputCards == "" or inputCards == " ":
+        inputCards = previousUserInput
 
-        if inputCards[0] == '~':
-            inputCards = inputCards[1:]
-        else:
-            inputCards = f"~{inputCards}"
+        if colorPair == "all":  # only if the color pair wasn't selected
+            if inputCards[0] == '~':
+                inputCards = inputCards[1:]
+            else:
+                inputCards = f"~{inputCards}"
         print(f"Setting user input to \"{inputCards}\"")
+
+    # set the previous user input to inputCards.
+    # if the color pair was set, then there will be an unnecessary residual
+    # {colorPair}:
+    previousUserInput = inputCards
+    if previousUserInput and previousUserInput[2] == ":" and colorPair != "all":
+        if previousUserInput[:2].upper() in ["WU", "UB", "BR", "RG", "WG",
+                                             "WR", "UR", "UG", "BG", "WB"]:
+            previousUserInput = previousUserInput[3:]
+    if colorPair != "all":
+        previousUserInput = f"{colorPair}:{previousUserInput}"
 
     cards = []
     # iterate through every character. if it isn't a space and it isn't the
@@ -257,7 +294,8 @@ while True:
         if currentCardString == "instruction":
             print("Instruction manual:")
             print("⚠ Please do not press Enter without anything inside. ⚠")
-            print("⚠ Please forgive any typos, as this was made in half a month or so. ⚠")
+            print(
+                "⚠ Please forgive any typos, as this was made in half a month or so. ⚠")
             print("At the top of the print line, you will see the ratings of "
                   + "all cards, formatted as the last part says.")
             print("Type a number of cards. You can use abbreviations and you "
@@ -272,10 +310,12 @@ while True:
                   + "OH WR and IWD} {card name}")
             print("Where:")
             print("— GIH WR is the winrate when the card is in your hand. ")
-            print("— OH WR is the winrate when the card is in your opening hand.")
+            print(
+                "— OH WR is the winrate when the card is in your opening hand.")
             print("— IWD is the improvement when drawn.")
-            print("— The grade ranges from S+, S, S-, all the way down to D-, E, "
-                  + "and F. ")
+            print(
+                "— The grade ranges from S+, S, S-, all the way down to D-, E, "
+                + "and F. ")
             print("— The z-score is the number of standard deviations away from"
                   + "the mean that whatever you're measuring the z-score of is.")
             print("— If you type '!' as the first character and there are no ';"
@@ -289,17 +329,6 @@ while True:
 
     print(f"Player group: {playerGroup.lower()}")
 
-    # no matter how many cards there are, if the third character is ":",
-    # set the color pair to the combination of the first and second
-    # chars if it's in WU, UB, BR, RG, GW, WR, RU, UG, GB, and BW.
-    # otherwise, set the color pair to "all".
-    colorPair = "all"
-    if inputCards[2] == ":":
-        if inputCards[:2].upper() in ["WU", "UB", "BR", "RG", "WG",
-                              "WR", "UR", "UG", "BG", "WB"]:
-            colorPair = inputCards[:2].upper()
-
-    if inputCards[3:] == "":
 
 
     # gather all the cards so that we can sort them
@@ -330,6 +359,7 @@ while True:
     # compare function, and then sorting using that.
     import functools
 
+
     def compareCards(card1, card2):
         # handles not enough sample size
         if card1["# GIH"] < 100 or card2["# GIH"] < 100:
@@ -356,18 +386,20 @@ while True:
                     # if all are the same, maintain the order
                     return 0
 
+
     sortedCards = sorted(cardsSelected, key=functools.cmp_to_key(compareCards))
-    if (singleCard): print(f"🍓 {cardName}")
+    if singleCard:
+        print(
+            f"🍓 {ANSI.blue}{cardName}{ANSI.reset} → ALSA {data[cardName]['ALSA']:0<4}"
+            )
     else:
         print("🍓")
         for card in sortedCards:
-            print(card["Name"])
+            print(f"{ANSI.blue}{card['Name']}{ANSI.reset} → ALSA {data[card['Name']]['ALSA']:0<4}")
 
     # print the table for every card
-    print("     n | GIH WR%        | OH WR%         | IWD            |",
-          "color pair" if singleCard else "name")
-
-
+    print(f"     {ANSI.dimWhite}n{ANSI.reset} | GIH WR%        | OH WR%         | IWD            |",
+          f"color pair" if singleCard else "name")
 
     for card in sortedCards:
         if (card["# GIH"] > 100):
@@ -387,23 +419,31 @@ while True:
             # space properly so that if there is a negative in the IWD, it
             # doesn't matter even though a negative takes up a character
             if (float(card["IWD"][:-2]) >= 0):
-                print(f"{card['# GIH']:6}", "|",
-                      gradeGIH, ANSI.white, zScoreGIH, ANSI.reset, card["GIH WR"], "|",
-                      gradeOH, ANSI.white, zScoreOH, ANSI.reset, card["OH WR"], "|",
-                      gradeIWD, ANSI.white, zScoreIWD, ANSI.reset, " " + padEnd(card["IWD"][:-2], 4), "|",
+                print(f"{ANSI.dimWhite}{card['# GIH']:>6}{ANSI.reset}", "|",
+                      gradeGIH, ANSI.dimWhite, zScoreGIH, ANSI.reset,
+                      card["GIH WR"], "|",
+                      gradeOH, ANSI.dimWhite, zScoreOH, ANSI.reset,
+                      card["OH WR"], "|",
+                      gradeIWD, ANSI.dimWhite, zScoreIWD, ANSI.reset,
+                      " " + padEnd(card["IWD"][:-2], 4), "|",
                       card["colorPair"] if singleCard else card["Name"])
             else:
                 print(f"{card['# GIH']:6}", "|",
-                      gradeGIH, ANSI.white, zScoreGIH, ANSI.reset, card["GIH WR"], "|",
-                      gradeOH, ANSI.white, zScoreOH, ANSI.reset, card["OH WR"], "|",
-                      gradeIWD, ANSI.white, zScoreIWD, ANSI.reset, padEnd(card["IWD"][:-2], 5), "|",
+                      gradeGIH, ANSI.dimWhite, zScoreGIH, ANSI.reset,
+                      card["GIH WR"], "|",
+                      gradeOH, ANSI.dimWhite, zScoreOH, ANSI.reset,
+                      card["OH WR"], "|",
+                      gradeIWD, ANSI.dimWhite, zScoreIWD, ANSI.reset,
+                      padEnd(card["IWD"][:-2], 5), "|",
                       card["colorPair"] if singleCard else card["Name"])
 
         else:
             if not singleCard:
                 print("Inadequ|te data for", card["Name"])
-                print("     n | GIH WR%        | OH WR%         | IWD            |",
-                      "color pair" if singleCard else "name")
+                print(
+                    f"     {ANSI.dimWhite}n{ANSI.reset} | GIH WR%        | OH WR%         | IWD            |",
+                    f"name")
+
 
     if showOracleText:
         # show all relevant information
@@ -412,7 +452,4 @@ while True:
         print(scryfallCardData["type_line"])
         print(scryfallCardData["oracle_text"])
         print("")  # newline
-
-    previousUserInput = inputCards
     print(f"previousUserInput is now \"{previousUserInput}\"")
-
