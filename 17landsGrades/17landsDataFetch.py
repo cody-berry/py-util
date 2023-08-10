@@ -102,7 +102,7 @@ def processData(data):
         # pp
         if (card["drawn_improvement_win_rate"]):
             cardAlternate["IWD"] = str(
-                round(card["drawn_improvement_win_rate"] * 100, 1)) + "pp"
+                round(card["drawn_improvement_win_rate"] * 100, 2)) + "pp"
             IWDs.append(float(cardAlternate["IWD"][:-2]))
         cardData[card["name"]] = cardAlternate
 
