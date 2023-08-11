@@ -137,8 +137,12 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
     stdevIWD = jsonData["generalStats"]["IWD"]["σ"]
 
     print("Overall data:")
-    print(
-        f"     {ANSI.dimWhite}n{ANSI.reset} | GIH WR%         | OH WR%          | IWD                | name")
+
+    print(f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
+          f"GIH WR%         {ANSI.dimWhite}|{ANSI.reset} "
+          f"OH WR%          {ANSI.dimWhite}|{ANSI.reset} "
+          f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
+          f"name")
 
     # print the card data
     for cardName, card in cardData.items():
@@ -156,16 +160,23 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
 
             gradeIWD = calculateGrade(card["zScoreIWD"])
 
-            print(f"{ANSI.dimWhite}{card['# GIH']:>6}{ANSI.reset} | "  # sample size
-                  f"{gradeGIH} {ANSI.dimWhite}{float(zScoreGIH): 6.3f}{ANSI.reset} {card['GIH WR']} | "
-                  f"{gradeIWD} {ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} {card['OH WR']} | "
-                  f"{gradeOH} {ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} {float(card['IWD'][:-2]): >6.2f}{ANSI.dimWhite}pp{ANSI.reset} | "
-                  + cardName)
+            print(
+                f"{ANSI.dimWhite}{card['# GIH']:>6}{ANSI.reset} "  # sample size
+                f"{ANSI.dimWhite}|{ANSI.reset} "
+                f"{gradeGIH} {ANSI.dimWhite}{float(zScoreGIH): 6.3f}{ANSI.reset} {card['GIH WR']} "
+                f"{ANSI.dimWhite}|{ANSI.reset} "
+                f"{gradeIWD} {ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} {card['OH WR']} "
+                f"{ANSI.dimWhite}|{ANSI.reset} "
+                f"{gradeOH} {ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} {float(card['IWD'][:-2]): >6.2f}{ANSI.dimWhite}pp{ANSI.reset} "
+                f"{ANSI.dimWhite}|{ANSI.reset} {card['Name']}")
 
         else:
-            print("Inadequ|te data for", card["Name"])
-            print(
-                f"     {ANSI.dimWhite}n{ANSI.reset} | GIH WR%         | OH WR%          | IWD                | name")
+            print(f"Inadequ{ANSI.dimWhite}|{ANSI.reset}te data for", card["Name"])
+            print(f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
+                  f"GIH WR%         {ANSI.dimWhite}|{ANSI.reset} "
+                  f"OH WR%          {ANSI.dimWhite}|{ANSI.reset} "
+                  f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
+                  f"name")
 
     cardNames = list(cardData.keys())
 
@@ -212,7 +223,7 @@ from fuzzywuzzy import process
 previousUserInput = ""
 
 while True:
-    delimiter = ";"  # the delimiter between every card
+    delimiter = ","  # the delimiter between every card
 
     # input card name(s) with a delimiter
     inputCards = input(
@@ -234,7 +245,6 @@ while True:
         inputCards = previousUserInput
 
         if colorPair == "all":  # only if the color pair wasn't selected
-            colorPair = "all"
             if inputCards and inputCards[2] == ":":
                 if inputCards[:2].upper() in ["WU", "UB", "BR", "RG", "WG",
                                               "WR", "UR", "UG", "BG", "WB"]:
@@ -246,9 +256,8 @@ while True:
                 inputCards = f"~{inputCards}"
         print(f"Setting user input to \"{inputCards}\"")
 
-
     print(inputCards)
-    print(f"🌈 Color pair: {colorPair}")
+    print(f"🌈 Color pair: {colorPair} ")
 
     # set the previous user input to inputCards.
     # if the color pair was set, then there will be an unnecessary residual
@@ -388,8 +397,12 @@ while True:
             print(f"{ANSI.blue}{card['Name']}{ANSI.reset} → ALSA {data[card['Name']]['ALSA']:0<4}")
 
     # print the table for every card
-    print(f"     {ANSI.dimWhite}n{ANSI.reset} | GIH WR%         | OH WR%          | IWD                | "
-          f"color pair" if singleCard else "name")
+    print(f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
+          f"GIH WR%         {ANSI.dimWhite}|{ANSI.reset} "
+          f"OH WR%          {ANSI.dimWhite}|{ANSI.reset} "
+          f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
+          f"{'color pair' if singleCard else 'name'}")
+
 
     for card in sortedCards:
         if (card["# GIH"] > 100):
@@ -407,17 +420,24 @@ while True:
             gradeIWD = calculateGrade(card["zScoreIWD"])
 
             print(
-                f"{ANSI.dimWhite}{card['# GIH']:>6}{ANSI.reset} | "  # sample size
-                f"{gradeGIH} {ANSI.dimWhite}{float(zScoreGIH): 6.3f}{ANSI.reset} {card['GIH WR']} | "
-                f"{gradeIWD} {ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} {card['OH WR']} | "
-                f"{gradeOH} {ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} {float(card['IWD'][:-2]): >6.2f}{ANSI.dimWhite}pp{ANSI.reset} | "
-                + card["colorPair"] if singleCard else card["Name"])
+                f"{ANSI.dimWhite}{card['# GIH']:>6}{ANSI.reset} "  # sample size
+                f"{ANSI.dimWhite}|{ANSI.reset} "
+                f"{gradeGIH} {ANSI.dimWhite}{float(zScoreGIH): 6.3f}{ANSI.reset} {card['GIH WR']} "
+                f"{ANSI.dimWhite}|{ANSI.reset} "
+                f"{gradeIWD} {ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} {card['OH WR']} "
+                f"{ANSI.dimWhite}|{ANSI.reset} "
+                f"{gradeOH} {ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} {float(card['IWD'][:-2]): >6.2f}{ANSI.dimWhite}pp{ANSI.reset} "
+                f"{ANSI.dimWhite}|{ANSI.reset} "
+                f"{card['colorPair'] if singleCard else card['Name']}")
 
         else:
             if not singleCard:
-                print("Inadequ|te data for", card["Name"])
-                print(
-                    f"     {ANSI.dimWhite}n{ANSI.reset} | GIH WR%         | OH WR%          | IWD                | name")
+                print(f"Inadequ{ANSI.dimWhite}|{ANSI.reset}te data for", card["Name"])
+                print(f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
+                      f"GIH WR%         {ANSI.dimWhite}|{ANSI.reset} "
+                      f"OH WR%          {ANSI.dimWhite}|{ANSI.reset} "
+                      f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
+                      f"name")
 
 
     if showOracleText:
