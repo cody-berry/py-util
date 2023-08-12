@@ -1,7 +1,20 @@
 # ⚠Only run once a day if you don't want 17lands to complain at you.⚠
 import json
-
 import requests
+import datetime
+
+current_time = datetime.datetime.now() # extract the current time and save it
+
+with open("cardRatingsAll/lastUpdated.json", "w") as lastUpdatedFile:
+    lastUpdatedFile.write(
+        str([current_time.year,
+             current_time.month,
+             current_time.day,
+             current_time.hour,
+             current_time.minute,
+             current_time.second,
+             current_time.microsecond])
+    )
 
 
 def fetchData(url):

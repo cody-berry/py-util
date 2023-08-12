@@ -1,3 +1,5 @@
+import datetime
+
 # Testing section
 
 # Section 1: Testing mean on a distribution.
@@ -222,12 +224,80 @@ from fuzzywuzzy import process
 
 previousUserInput = ""
 
+# get the time since the top data and normal data was last updated
+
+# use a function to format a time difference into something like "over a year
+# ago" or "within a minute ago"
+def format_time_difference(time_difference):
+
+    # get the number of seconds, days, hours, and minutes ago
+    days = time_difference.days
+    seconds = time_difference.seconds
+    hours = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+
+    string = ""
+    # if years > 1:
+    #     return "Over 2 years ago"
+    # if years > 0:
+    #     return "A year ago" if months == 0 else f"A year and {months} month{'s' if months > 1 else ''} ago"
+    # if months > 0:
+    #     return "A month ago" if months == 1 else f"{months} months ago"
+    if days > 0:
+        string = "a day " if days == 1 else f"{days} days "
+    if hours > 0:
+        if string:
+            string += "and "
+        string += "an hour " if hours == 1 else f"{hours} hours "
+    if minutes > 1 and days == 0:
+        if string:
+            string += "and "
+        string += f"{minutes} minutes "
+    if minutes == 1 and hours == 0 and days == 0:
+        string = "a minute and 1 second " if seconds == 1 else f"a minute and {seconds} seconds "
+    if minutes == 0:
+        return "within a minute ago"
+    return string + "ago"
+
+currentTime = datetime.datetime.now()
+
+# read the last updated time for cardRatingsAll and cardRatingsTop.
+with open("cardRatingsAll/lastUpdated.json", "r") as lastUpdated:
+    lastUpdatedList = json.loads(lastUpdated.readline())
+    lastUpdatedTime = datetime.datetime(
+        lastUpdatedList[0],  # years
+        lastUpdatedList[1],  # months
+        lastUpdatedList[2],  # days
+        lastUpdatedList[3],  # hours
+        lastUpdatedList[4],  # minutes
+        lastUpdatedList[5]   # seconds
+    )
+    print(f"Updated cardRatingsAll {format_time_difference(currentTime - lastUpdatedTime)}")
+
+with open("cardRatingsTop/lastUpdated.json", "r") as lastUpdated:
+    lastUpdatedList = json.loads(lastUpdated.readline())
+    lastUpdatedTime = datetime.datetime(
+        lastUpdatedList[0],  # years
+        lastUpdatedList[1],  # months
+        lastUpdatedList[2],  # days
+        lastUpdatedList[3],  # hours
+        lastUpdatedList[4],  # minutes
+        lastUpdatedList[5]   # seconds
+    )
+    print(f"Updated cardRatingsTop {format_time_difference(currentTime - lastUpdatedTime)}")
+
 while True:
     delimiter = ","  # the delimiter between every card
 
     # input card name(s) with a delimiter
     inputCards = input(
         "Enter card name (input 'instruction' for instructions list)→ ")
+
+    if inputCards == "exit":
+        print("Exitting!...")
+        break
 
     # no matter how many cards there are, if the third character is ":",
     # set the color pair to the combination of the first and second
@@ -250,14 +320,11 @@ while True:
                                               "WR", "UR", "UG", "BG", "WB"]:
                     colorPair = inputCards[:2].upper()
                     inputCards = inputCards[3:]
+                    print(f"🌈Color filter: {colorPair}")
             if inputCards[0] == '~':
                 inputCards = inputCards[1:]
             else:
                 inputCards = f"~{inputCards}"
-        print(f"Setting user input to \"{inputCards}\"")
-
-    print(inputCards)
-    print(f"🌈 Color pair: {colorPair} ")
 
     # set the previous user input to inputCards.
     # if the color pair was set, then there will be an unnecessary residual
@@ -326,7 +393,7 @@ while True:
     if inputCards[0] == "~":
         playerGroup = "Top"
 
-    print(f"Player group: {playerGroup.lower()}")
+    print(f"{ANSI.dimWhite}[DATASET]{ANSI.reset} {playerGroup.lower()}")
 
 
 
@@ -447,4 +514,3 @@ while True:
         print(scryfallCardData["type_line"])
         print(scryfallCardData["oracle_text"])
         print("")  # newline
-    print(f"previousUserInput is now \"{previousUserInput}\"")
