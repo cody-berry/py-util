@@ -96,7 +96,7 @@ for colorPair in colorPairs:
         sortedCards = []
         jsonData = json.load(data)
         for cardName, cardData in jsonData["cardData"].items():
-            if (cardData["# GIH"] > 100):
+            if (cardData["# GIH"] > 100) and (cardData["Rarity"] == "common" or cardData["Rarity"] == "uncommon"):
                 sortedCards.append(cardData)
         sortedCards = sorted(sortedCards,
                              key=functools.cmp_to_key(compareCards))
