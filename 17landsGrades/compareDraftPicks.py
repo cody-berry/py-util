@@ -59,48 +59,48 @@ def calculateGrade(zScore):
 
     # Special: SS
     if zScore > 3.5:
-        result = f"{ANSI.pureWhite}SS{ANSI.reset}"
+        result = f"\033[38;2;255;255;255mSS{ANSI.reset}"
     # S range
     if zScore > (3.5 - 1 / 3):
-        result = f"{ANSI.pureWhite}S+{ANSI.reset}"
+        result = f"\033[38;2;254;254;254mS+{ANSI.reset}"
     elif zScore > (2.5 + 1 / 3):
-        result = f"{ANSI.pureWhite}S {ANSI.reset}"
+        result = f"\033[38;2;244;244;244mS {ANSI.reset}"
     elif zScore > 2.5:
-        result = f"{ANSI.pureWhite}S-{ANSI.reset}"
+        result = f"\033[38;2;234;234;234mS-{ANSI.reset}"
     # A range
     elif zScore > (2.5 - 1 / 3):
-        result = f"{ANSI.pureWhite}A+{ANSI.reset}"
+        result = f"\033[38;2;223;223;223mA+{ANSI.reset}"
     elif zScore > (1.5 + 1 / 3):
-        result = f"{ANSI.pureWhite}A {ANSI.reset}"
+        result = f"\033[38;2;220;220;220mA {ANSI.reset}"
     elif zScore > 1.5:
-        result = f"{ANSI.pureWhite}A-{ANSI.reset}"
+        result = f"\033[38;2;217;217;217mA-{ANSI.reset}"
     # B range
     elif zScore > (1.5 - 1 / 3):
-        result = f"{ANSI.pureWhite}B+{ANSI.reset}"
+        result = f"\033[38;2;214;214;214mB+{ANSI.reset}"
     elif zScore > (0.5 + 1 / 3):
-        result = f"{ANSI.pureWhite}B {ANSI.reset}"
+        result = f"\033[38;2;211;211;211mB {ANSI.reset}"
     elif zScore > 0.5:
-        result = f"{ANSI.reset}B-"
+        result = f"\033[38;2;200;200;200mB-{ANSI.reset}"
     # C range
     elif zScore > (0.5 - 1 / 3):
-        result = f"{ANSI.reset}C+"
+        result = f"\033[38;2;182;182;182mC+{ANSI.reset}"
     elif zScore > (-0.5 + 1 / 3):
-        result = f"{ANSI.reset}C "
+        result = f"\033[38;2;152;152;152mC {ANSI.reset}"
     elif zScore > -0.5:
-        result = f"{ANSI.reset}C-"
+        result = f"\033[38;2;142;142;142mC-{ANSI.reset}"
     # D range
     elif zScore > (-0.5 - 1 / 3):
-        result = f"{ANSI.reset}D+"
+        result = f"\033[38;2;131;131;131mD+{ANSI.reset}"
     elif zScore > (-1.5 + 1 / 3):
-        result = f"{ANSI.dimWhite}D {ANSI.reset}"
+        result = f"\033[38;2;117;117;117mD {ANSI.reset}"
     elif zScore > -1.5:
-        result = f"{ANSI.dimWhite}D-{ANSI.reset}"
+        result = f"\033[38;2;104;104;104mD-{ANSI.reset}"
     # E range
     elif zScore > -2:
-        result = f"{ANSI.dimWhite}E {ANSI.reset}"
+        result = f"\033[38;2;90;90;90mE {ANSI.reset}"
     # F range
     else:
-        result = f"{ANSI.dimWhite}F {ANSI.reset}"
+        result = f"\033[38;2;75;75;75mF {ANSI.reset}"
 
     return result
 
@@ -156,11 +156,11 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
             zScoreOH = padEnd(str(card["zScoreOH"]), 5)
             zScoreIWD = padEnd(str(card["zScoreIWD"]), 5)
 
-            gradeGIH = calculateGrade(card["zScoreGIH"])
+            gradeGIH = calculateGrade(float(card["zScoreGIH"]))
 
-            gradeOH = calculateGrade(card["zScoreOH"])
+            gradeOH = calculateGrade(float(card["zScoreOH"]))
 
-            gradeIWD = calculateGrade(card["zScoreIWD"])
+            gradeIWD = calculateGrade(float(card["zScoreIWD"]))
 
             print(
                 f"{ANSI.dimWhite}{card['# GIH']:>6}{ANSI.reset} "  # sample size
@@ -325,6 +325,12 @@ while True:
                 inputCards = inputCards[1:]
             else:
                 inputCards = f"~{inputCards}"
+        else:
+            # otherwise, trim any residual color pair
+            if inputCards and inputCards[2] == ":":
+                if inputCards[:2].upper() in ["WU", "UB", "BR", "RG", "WG",
+                                              "WR", "UR", "UG", "BG", "WB"]:
+                    inputCards = inputCards[3:]
 
     # set the previous user input to inputCards.
     # if the color pair was set, then there will be an unnecessary residual
@@ -480,11 +486,11 @@ while True:
             zScoreOH = padEnd(str(card["zScoreOH"]), 5)
             zScoreIWD = padEnd(str(card["zScoreIWD"]), 5)
 
-            gradeGIH = calculateGrade(card["zScoreGIH"])
+            gradeGIH = calculateGrade(float(zScoreGIH))
 
-            gradeOH = calculateGrade(card["zScoreOH"])
+            gradeOH = calculateGrade(float(zScoreOH))
 
-            gradeIWD = calculateGrade(card["zScoreIWD"])
+            gradeIWD = calculateGrade(float(zScoreIWD))
 
             print(
                 f"{ANSI.dimWhite}{card['# GIH']:>6}{ANSI.reset} "  # sample size
