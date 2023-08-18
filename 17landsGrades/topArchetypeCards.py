@@ -88,7 +88,9 @@ colorPairs = ["WU", "WB", "WR", "WG",
 
 import functools
 
-numCards = int(input("Please enter the number of cards you want to display for each archetype. "))
+numCards = 200
+while numCards > 100:
+    numCards = int(input("Please enter the number of cards you want to display for each archetype, not over 100. "))
 
 for colorPair in colorPairs:
     print(f"\n🥏Color pair: {colorPair}")

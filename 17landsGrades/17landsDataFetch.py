@@ -191,6 +191,7 @@ def processDataToMaster(colorPair, data, originalMaster):
             newMaster[cardName] = {}
         newMaster[cardName]["ALSA"] = cardData["ALSA"]
         newMaster[cardName]["name"] = cardName
+        newMaster[cardName]["color"] = cardData["Color"]
         print(cardData)
         newMaster[cardName][colorPair] = {
             "GIH WR": cardData["GIH WR"],
