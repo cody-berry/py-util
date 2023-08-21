@@ -102,6 +102,11 @@ for colorPair in colorPairs:
                 sortedCards.append(cardData)
         sortedCards = sorted(sortedCards,
                              key=functools.cmp_to_key(compareCards))
+        print(f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
+              f"GIH WR%         {ANSI.dimWhite}|{ANSI.reset} "
+              f"OH WR%          {ANSI.dimWhite}|{ANSI.reset} "
+              f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
+              f"name")
 
         for i in range(numCards):  # print 30 cards
             card = sortedCards[i]

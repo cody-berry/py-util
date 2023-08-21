@@ -138,48 +138,6 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
     stdevOH = jsonData["generalStats"]["GIH WR"]["σ"]
     stdevIWD = jsonData["generalStats"]["IWD"]["σ"]
 
-    print("Overall data:")
-
-    print(f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
-          f"GIH WR%         {ANSI.dimWhite}|{ANSI.reset} "
-          f"OH WR%          {ANSI.dimWhite}|{ANSI.reset} "
-          f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
-          f"name")
-
-    # print the card data
-    for cardName, card in cardData.items():
-        if card["# GIH"] > 100:
-            # calculate and set zScores and grades for GIH WR% (game in hand
-            # winrate), OH WR% (opening hand winrate), and IWD (improvement
-            # when drawn).
-            zScoreGIH = padEnd(str(card["zScoreGIH"]), 5)
-            zScoreOH = padEnd(str(card["zScoreOH"]), 5)
-            zScoreIWD = padEnd(str(card["zScoreIWD"]), 5)
-
-            gradeGIH = calculateGrade(float(card["zScoreGIH"]))
-
-            gradeOH = calculateGrade(float(card["zScoreOH"]))
-
-            gradeIWD = calculateGrade(float(card["zScoreIWD"]))
-
-            print(
-                f"{ANSI.dimWhite}{card['# GIH']:>6}{ANSI.reset} "  # sample size
-                f"{ANSI.dimWhite}|{ANSI.reset} "
-                f"{gradeGIH} {ANSI.dimWhite}{float(zScoreGIH): 6.3f}{ANSI.reset} {card['GIH WR']} "
-                f"{ANSI.dimWhite}|{ANSI.reset} "
-                f"{gradeIWD} {ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} {card['OH WR']} "
-                f"{ANSI.dimWhite}|{ANSI.reset} "
-                f"{gradeOH} {ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} {float(card['IWD'][:-2]): >6.2f}{ANSI.dimWhite}pp{ANSI.reset} "
-                f"{ANSI.dimWhite}|{ANSI.reset} {card['Name']}")
-
-        else:
-            print(f"Inadequ{ANSI.dimWhite}|{ANSI.reset}te data for", card["Name"])
-            print(f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
-                  f"GIH WR%         {ANSI.dimWhite}|{ANSI.reset} "
-                  f"OH WR%          {ANSI.dimWhite}|{ANSI.reset} "
-                  f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
-                  f"name")
-
     cardNames = list(cardData.keys())
 
 # import the set data
@@ -331,6 +289,11 @@ while True:
                 if inputCards[:2].upper() in ["WU", "UB", "BR", "RG", "WG",
                                               "WR", "UR", "UG", "BG", "WB"]:
                     inputCards = inputCards[3:]
+
+    # if the previous user input is a +, append this user input (except for the
+    # +) to the previous user input
+    if len(inputCards) > 1 and inputCards[0] == "+":
+        inputCards = f"{previousUserInput}, {inputCards[1:]}"
 
     # set the previous user input to inputCards.
     # if the color pair was set, then there will be an unnecessary residual
