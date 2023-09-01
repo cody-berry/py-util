@@ -460,9 +460,9 @@ while True:
                 f"{ANSI.dimWhite}|{ANSI.reset} "
                 f"{gradeGIH} {ANSI.dimWhite}{float(zScoreGIH): 6.3f}{ANSI.reset} {card['GIH WR']} "
                 f"{ANSI.dimWhite}|{ANSI.reset} "
-                f"{gradeIWD} {ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} {card['OH WR']} "
+                f"{gradeOH} {ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} {card['OH WR']} "
                 f"{ANSI.dimWhite}|{ANSI.reset} "
-                f"{gradeOH} {ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} {float(card['IWD'][:-2]): >6.2f}{ANSI.dimWhite}pp{ANSI.reset} "
+                f"{gradeIWD} {ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} {float(card['IWD'][:-2]): >6.2f}{ANSI.dimWhite}pp{ANSI.reset} "
                 f"{ANSI.dimWhite}|{ANSI.reset} "
                 f"{card['colorPair'] if singleCard else card['Name']}")
 
