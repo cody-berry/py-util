@@ -144,7 +144,7 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
 import requests
 
 # constructing the API request
-set_code = "ltr"
+set_code = "woe"
 url = f"https://api.scryfall.com/cards/search?q=set:{set_code}"
 
 # sending the API request
@@ -177,17 +177,51 @@ else:
     raise FileNotFoundError(
         f"Could not load scryfall data for {set_code}. Error code: {response.status_code}")
 
+# constructing the API request
+set_code = "wot"
+url = f"https://api.scryfall.com/cards/search?q=set:{set_code}"
+
+# sending the API request
+response = requests.get(url)
+
+# processing the API response
+if response.status_code == 200:
+    data = response.json()
+    # extracting relevant information from the response
+    cards = data['data']
+
+    # saving the data
+    # using pagination to retrieve all the cards
+    while data["has_more"]:
+        next_page_url = data["next_page"]
+        response = requests.get(next_page_url)
+        if (response.status_code == 200):
+            data = response.json()
+            cards.extend(data['data'])
+        else:
+            raise FileNotFoundError(
+                f"Could not load next page. Error code: {response.status_code}")
+
+    # transform the json list into a json dict
+    scryfallDict = {**scryfallDict, **{card["name"]: card for card in cards}}
+    print("Data saved successfully.")
+else:
+    raise FileNotFoundError(
+        f"Could not load scryfall data for {set_code}. Error code: {response.status_code}")
+
+
+
 # import fuzzywuzzy
 from fuzzywuzzy import process
 
 previousUserInput = ""
+
 
 # get the time since the top data and normal data was last updated
 
 # use a function to format a time difference into something like "over a year
 # ago" or "within a minute ago"
 def format_time_difference(time_difference):
-
     # get the number of seconds, days, hours, and minutes ago
     days = time_difference.days
     seconds = time_difference.seconds
@@ -219,6 +253,7 @@ def format_time_difference(time_difference):
         return "within a minute ago"
     return string + "ago"
 
+
 currentTime = datetime.datetime.now()
 
 # read the last updated time for cardRatingsAll and cardRatingsTop.
@@ -230,9 +265,10 @@ with open("cardRatingsAll/lastUpdated.json", "r") as lastUpdated:
         lastUpdatedList[2],  # days
         lastUpdatedList[3],  # hours
         lastUpdatedList[4],  # minutes
-        lastUpdatedList[5]   # seconds
+        lastUpdatedList[5]  # seconds
     )
-    print(f"Updated cardRatingsAll {format_time_difference(currentTime - lastUpdatedTime)}")
+    print(
+        f"Updated cardRatingsAll {format_time_difference(currentTime - lastUpdatedTime)}")
 
 with open("cardRatingsTop/lastUpdated.json", "r") as lastUpdated:
     lastUpdatedList = json.loads(lastUpdated.readline())
@@ -242,9 +278,10 @@ with open("cardRatingsTop/lastUpdated.json", "r") as lastUpdated:
         lastUpdatedList[2],  # days
         lastUpdatedList[3],  # hours
         lastUpdatedList[4],  # minutes
-        lastUpdatedList[5]   # seconds
+        lastUpdatedList[5]  # seconds
     )
-    print(f"Updated cardRatingsTop {format_time_difference(currentTime - lastUpdatedTime)}")
+    print(
+        f"Updated cardRatingsTop {format_time_difference(currentTime - lastUpdatedTime)}")
 
 while True:
     delimiter = ","  # the delimiter between every card
@@ -330,7 +367,8 @@ while True:
     if len(cards) == 1:
         if currentCardString == "instruction":
             print("Instruction manual:")
-            print("⚠ Please forgive any typos, as this was made in half a month or so. ⚠")
+            print(
+                "⚠ Please forgive any typos, as this was made in half a month or so. ⚠")
             print("At the top of the print line, you will see the ratings of "
                   + "all cards, formatted as the last part says.")
             print("Type a number of cards. You can use abbreviations and you "
@@ -363,8 +401,6 @@ while True:
         playerGroup = "Top"
 
     print(f"{ANSI.dimWhite}[DATASET]{ANSI.reset} {playerGroup.lower()}")
-
-
 
     # gather all the cards so that we can sort them
     cardsSelected = []
@@ -426,11 +462,12 @@ while True:
     if singleCard:
         print(
             f"🍓 {ANSI.blue}{cardName}{ANSI.reset} → ALSA {data[cardName]['ALSA']:0<4}"
-            )
+        )
     else:
         print("🍓")
         for card in sortedCards:
-            print(f"{ANSI.blue}{card['Name']}{ANSI.reset} → ALSA {data[card['Name']]['ALSA']:0<4}")
+            print(
+                f"{ANSI.blue}{card['Name']}{ANSI.reset} → ALSA {data[card['Name']]['ALSA']:0<4}")
 
     # print the table for every card
     print(f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
@@ -439,9 +476,11 @@ while True:
           f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
           f"{'color pair' if singleCard else 'name'}")
 
-
     for card in sortedCards:
-        if (card["# GIH"] > 100):
+        if (card["# GIH"] > 500 and
+            card["# GNS"] > 500 and
+            card["# OH"] > 500 and
+            card["# GD"] > 500):
             # calculate and set zScores and grades for GIH WR% (game in hand
             # winrate), OH WR% (opening hand winrate), and IWD (improvement
             # when drawn).
@@ -468,13 +507,14 @@ while True:
 
         else:
             if not singleCard:
-                print(f"Inadequ{ANSI.dimWhite}|{ANSI.reset}te data for", card["Name"])
-                print(f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
-                      f"GIH WR%         {ANSI.dimWhite}|{ANSI.reset} "
-                      f"OH WR%          {ANSI.dimWhite}|{ANSI.reset} "
-                      f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
-                      f"name")
-
+                print(f"Inadequ{ANSI.dimWhite}|{ANSI.reset}te data for",
+                      card["Name"])
+                print(
+                    f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
+                    f"GIH WR%         {ANSI.dimWhite}|{ANSI.reset} "
+                    f"OH WR%          {ANSI.dimWhite}|{ANSI.reset} "
+                    f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
+                    f"name")
 
     if showOracleText:
         # show all relevant information

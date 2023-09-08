@@ -34,6 +34,9 @@ def fetchData(url):
 # the url that handles the expansion for the current set
 baseURL = (f'https://www.17lands.com/card_ratings/data?expansion=LTR'
            '&format=PremierDraft&user_group=top')
+baseURLBonusSheet = (f'https://www.17lands.com/card_ratings/data?expansion=WOT'
+                     f'&format=PremierDraft&user_group=top')
+bonusSheetToggle = True
 print(baseURL)
 
 
@@ -87,6 +90,9 @@ def processData(data):
         cardAlternate["Color"] = card["color"]
         cardAlternate["Rarity"] = card["rarity"]
         cardAlternate["# GIH"] = card["ever_drawn_game_count"]
+        cardAlternate["# GD"] = card["drawn_game_count"]
+        cardAlternate["# GNS"] = card["never_drawn_game_count"]
+        cardAlternate["# OH"] = card["opening_hand_game_count"]
         cardAlternate["OH WR"] = ""
         cardAlternate["GIH WR"] = ""
         cardAlternate["ATA"] = ""
@@ -123,31 +129,49 @@ def processData(data):
     OH_WRμ = 0
     for sample in OH_WRs:
         OH_WRμ += sample
-    OH_WRμ /= len(OH_WRs)
+    try:
+        OH_WRμ /= len(OH_WRs)
+    except ZeroDivisionError:
+        OH_WRμ = 0
     GIH_WRμ = 0
     for sample in GIH_WRs:
         GIH_WRμ += sample
-    GIH_WRμ /= len(GIH_WRs)
+    try:
+        GIH_WRμ /= len(GIH_WRs)
+    except ZeroDivisionError:
+        GIH_WRμ = 0
     IWDμ = 0
     for sample in IWDs:
         IWDμ += sample
-    IWDμ /= len(IWDs)
+    try:
+        IWDμ /= len(IWDs)
+    except ZeroDivisionError:
+        IWDμ = 0
 
     OH_WRσ = 0
     for sample in OH_WRs:
         OH_WRσ += (sample - OH_WRμ) ** 2
-    OH_WRσ /= len(OH_WRs)
-    OH_WRσ **= 0.5
+    try:
+        OH_WRσ /= len(OH_WRs)
+        OH_WRσ **= 0.5
+    except ZeroDivisionError:
+        OH_WRσ = 0
     GIH_WRσ = 0
     for sample in GIH_WRs:
         GIH_WRσ += (sample - GIH_WRμ) ** 2
-    GIH_WRσ /= len(GIH_WRs)
-    GIH_WRσ **= 0.5
+    try:
+        GIH_WRσ /= len(GIH_WRs)
+        GIH_WRσ **= 0.5
+    except ZeroDivisionError:
+        GIH_WRσ = 0
     IWDσ = 0
     for sample in IWDs:
         IWDσ += (sample - IWDμ) ** 2
-    IWDσ /= len(IWDs)
-    IWDσ **= 0.5
+    try:
+        IWDσ /= len(IWDs)
+        IWDσ **= 0.5
+    except ZeroDivisionError:
+        IWDσ = 0
 
     OH_WRStats = {"μ": OH_WRμ, "σ": OH_WRσ}
     GIH_WRStats = {"μ": GIH_WRμ, "σ": GIH_WRσ}
@@ -174,7 +198,6 @@ def processData(data):
 
     return result
 
-
 # puts data into a master json
 def processDataToMaster(colorPair, data, originalMaster):
     newMaster = originalMaster
@@ -189,7 +212,6 @@ def processDataToMaster(colorPair, data, originalMaster):
         newMaster[cardName]["ALSA"] = cardData["ALSA"]
         newMaster[cardName]["name"] = cardName
         newMaster[cardName]["color"] = cardData["Color"]
-        print(cardData)
         newMaster[cardName][colorPair] = {
             "GIH WR": cardData["GIH WR"],
             "zScoreGIH": cardData["zScoreGIH"],
@@ -197,7 +219,10 @@ def processDataToMaster(colorPair, data, originalMaster):
             "zScoreOH": cardData["zScoreOH"],
             "IWD": cardData["IWD"],
             "zScoreIWD": cardData["zScoreIWD"],
-            "# GIH": cardData["# GIH"]
+            "# GIH": cardData["# GIH"],
+            "# OH": cardData["# OH"],
+            "# GNS": cardData["# GNS"],
+            "# GD": cardData["# GD"]
         }
 
     return newMaster
@@ -212,18 +237,35 @@ additions = ["&colors=WU", "&colors=WB", "&colors=WR", "&colors=WG",
              "&colors=RG"  # R color pairs
              ]
 
-master = {}
+import ANSI
+
 statistics = {}
+master = {}
+coloredColors = {
+    "WU": f"{ANSI.pureWhite}W{ANSI.reset}{ANSI.blue}U{ANSI.reset}",
+    "WB": f"{ANSI.pureWhite}W{ANSI.reset}{ANSI.dimWhite}B{ANSI.reset}",
+    "WR": f"{ANSI.pureWhite}W{ANSI.reset}{ANSI.red}R{ANSI.reset}",
+    "WG": f"{ANSI.pureWhite}W{ANSI.reset}{ANSI.green}G{ANSI.reset}",
+    "UB": f"{ANSI.blue}U{ANSI.reset}{ANSI.dimWhite}B{ANSI.reset}",
+    "UR": f"{ANSI.blue}U{ANSI.reset}{ANSI.red}R{ANSI.reset}",
+    "UG": f"{ANSI.blue}U{ANSI.reset}{ANSI.green}G{ANSI.reset}",
+    "BR": f"{ANSI.dimWhite}B{ANSI.reset}{ANSI.red}R{ANSI.reset}",
+    "BG": f"{ANSI.dimWhite}B{ANSI.reset}{ANSI.green}G{ANSI.reset}",
+    "RG": f"{ANSI.red}R{ANSI.reset}{ANSI.green}G{ANSI.reset}",
+}
 
 for addition in additions:
     totalURL = baseURL + addition
-    print(f'🍑 {totalURL}')
+    totalURLBonusSheet = baseURLBonusSheet + addition
     # print color pair:
     colorPair = addition[-2:]
-    print(colorPair)
+    coloredColorPair = coloredColors[colorPair]
+    print(f'🍉 {coloredColorPair} {totalURL}')
 
     with open(f"cardRatingsTop/{colorPair}.json", "w") as cardDataJSON:
         data = fetchData(totalURL)
+        if bonusSheetToggle:
+            data.extend(fetchData(totalURLBonusSheet))
         processedData = processData(data)
         cardDataJSON.write(json.dumps(processedData))
         statistics[colorPair] = processedData["generalStats"]
@@ -232,6 +274,8 @@ for addition in additions:
 print(f'🍊 {baseURL}')
 with open("cardRatingsTop/all.json", "w") as cardDataJSON:
     data = fetchData(baseURL)
+    if bonusSheetToggle:
+        data.extend(fetchData(baseURLBonusSheet))
     processedData = processData(data)
     cardDataJSON.write(json.dumps(processedData))
     statistics["all"] = processedData["generalStats"]
