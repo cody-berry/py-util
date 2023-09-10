@@ -470,17 +470,21 @@ while True:
                 f"{ANSI.blue}{card['Name']}{ANSI.reset} → ALSA {data[card['Name']]['ALSA']:0<4}")
 
     # print the table for every card
-    print(f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
-          f"GIH WR%         {ANSI.dimWhite}|{ANSI.reset} "
-          f"OH WR%          {ANSI.dimWhite}|{ANSI.reset} "
-          f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
-          f"{'color pair' if singleCard else 'name'}")
+    print(f"     {ANSI.dimWhite}n{ANSI.reset}"  # 6 spaces for n
+          f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
+          f"GIH WR         "  # spaces needed: 3 (grade) + 7 (z-score) + 5 (GIH WR%) = 15
+          f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
+          f"OH WR          "  # spaces needed: 3 (grade) + 7 (z-score) + 5 (OH WR%) = 15
+          f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
+          f"IWD               "  # spaces needed: 3 (grade) + 7 (z-score) + 8 (IWD) = 18
+          f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
+          f"{'color pair' if singleCard else 'name'}")  # end of table
 
     for card in sortedCards:
-        if (card["# GIH"] > 500 and
-            card["# GNS"] > 500 and
-            card["# OH"] > 500 and
-            card["# GD"] > 500):
+        if ((card["# GIH"] > 500 and
+             card["# GNS"] > 500) or
+            (card["# OH"] > 500) or
+            (card["# GD"] > 500)):
             # calculate and set zScores and grades for GIH WR% (game in hand
             # winrate), OH WR% (opening hand winrate), and IWD (improvement
             # when drawn).
@@ -496,12 +500,22 @@ while True:
 
             print(
                 f"{ANSI.dimWhite}{card['# GIH']:>6}{ANSI.reset} "  # sample size
+                f"{ANSI.dimWhite}|{ANSI.reset}",
+              ((f"{gradeGIH} "
+                f"{ANSI.dimWhite}{float(zScoreGIH): 6.3f}{ANSI.reset} "
+                f"{card['GIH WR']}") if card['GIH WR'] else
+                f"               "),
+                f"{ANSI.dimWhite}|{ANSI.reset}",
+              ((f"{gradeOH} "
+                f"{ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} "
+                f"{card['OH WR']}") if card['OH WR'] else
+                f"               "),
                 f"{ANSI.dimWhite}|{ANSI.reset} "
-                f"{gradeGIH} {ANSI.dimWhite}{float(zScoreGIH): 6.3f}{ANSI.reset} {card['GIH WR']} "
-                f"{ANSI.dimWhite}|{ANSI.reset} "
-                f"{gradeOH} {ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} {card['OH WR']} "
-                f"{ANSI.dimWhite}|{ANSI.reset} "
-                f"{gradeIWD} {ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} {float(card['IWD'][:-2]): >6.2f}{ANSI.dimWhite}pp{ANSI.reset} "
+                f"{gradeIWD}",
+              ((f"{ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} "
+                f"{float(card['IWD'][:-2]): >6.2f}"
+                f"{ANSI.dimWhite}pp{ANSI.reset}") if card['IWD'] else
+                f"                 "),
                 f"{ANSI.dimWhite}|{ANSI.reset} "
                 f"{card['colorPair'] if singleCard else card['Name']}")
 
@@ -509,17 +523,32 @@ while True:
             if not singleCard:
                 print(f"Inadequ{ANSI.dimWhite}|{ANSI.reset}te data for",
                       card["Name"])
-                print(
-                    f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
-                    f"GIH WR%         {ANSI.dimWhite}|{ANSI.reset} "
-                    f"OH WR%          {ANSI.dimWhite}|{ANSI.reset} "
-                    f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
-                    f"name")
+                print(f"     {ANSI.dimWhite}n{ANSI.reset}"  # 6 spaces for n
+                      f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
+                      f"GIH WR         "  # spaces needed: 3 (grade) + 7 (z-score) + 5 (GIH WR%) = 15
+                      f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
+                      f"OH WR          "  # spaces needed: 3 (grade) + 7 (z-score) + 5 (OH WR%) = 15
+                      f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
+                      f"IWD               "  # spaces needed: 3 (grade) + 7 (z-score) + 8 (IWD) = 18
+                      f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
+                      f"{'color pair' if singleCard else 'name'}")  # end of table
 
     if showOracleText:
         # show all relevant information
-        scryfallCardData = scryfallDict[cardName]
-        print(f"\n{cardName} {scryfallCardData['mana_cost']}")
-        print(scryfallCardData["type_line"])
-        print(scryfallCardData["oracle_text"])
-        print("")  # newline
+        try:
+            scryfallCardData = scryfallDict[cardName]
+            print(f"\n{cardName} {scryfallCardData['mana_cost']}")
+            print(scryfallCardData["type_line"])
+            print(scryfallCardData["oracle_text"])
+            print("")  # newline
+        except KeyError:
+            # this is a double-faced card
+            cardMatch, temp = process.extractOne(cardName, scryfallDict.keys())
+            scryfallCardData = scryfallDict[cardMatch]
+
+            for cardFace in scryfallDict[cardMatch]['card_faces']:
+                print(f"\n{cardFace['name']} {cardFace['mana_cost']}")
+                print(cardFace["type_line"])
+                print(cardFace["oracle_text"])
+
+            print("")  # newline
