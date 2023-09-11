@@ -209,8 +209,6 @@ else:
     raise FileNotFoundError(
         f"Could not load scryfall data for {set_code}. Error code: {response.status_code}")
 
-
-
 # import fuzzywuzzy
 from fuzzywuzzy import process
 
@@ -282,6 +280,57 @@ with open("cardRatingsTop/lastUpdated.json", "r") as lastUpdated:
     )
     print(
         f"Updated cardRatingsTop {format_time_difference(currentTime - lastUpdatedTime)}")
+
+# makes W ANSI.pureWhite, U ANSI.blue, B ANSI.dimWhite, R ANSI.red, and G ANSI.green.
+def applyANSIToManaCost(manaCost):
+    indicesToModify = []
+    index = 0
+    for char in manaCost:
+        if char == "W":
+            indicesToModify.append([index, "W"])
+        if char == "U":
+            indicesToModify.append([index, "U"])
+        if char == "B":
+            indicesToModify.append([index, "B"])
+        if char == "R":
+            indicesToModify.append([index, "R"])
+        if char == "G":
+            indicesToModify.append([index, "G"])
+        index += 1
+
+    newManaCost = manaCost
+    for i in range(len(indicesToModify)-1, -1, -1):
+        element = indicesToModify[i]
+        letter = element[1]
+        index = element[0]
+        if letter == "W":
+            newManaCost = newManaCost[:index-1] + f"{ANSI.pureWhite}" \
+                                                "{W}" \
+                                                f"{ANSI.reset}"\
+                        + newManaCost[index+2:]
+        if letter == "U":
+            newManaCost = newManaCost[:index-1] + f"{ANSI.blue}" \
+                                                "{U}" \
+                                                f"{ANSI.reset}"\
+                        + newManaCost[index+2:]
+        if letter == "B":
+            newManaCost = newManaCost[:index-1] + f"{ANSI.dimWhite}" \
+                                                "{B}" \
+                                                f"{ANSI.reset}"\
+                        + newManaCost[index+2:]
+        if letter == "R":
+            newManaCost = newManaCost[:index-1] + f"{ANSI.red}" \
+                                                "{R}" \
+                                                f"{ANSI.reset}"\
+                        + newManaCost[index+2:]
+        if letter == "G":
+            newManaCost = newManaCost[:index-1] + f"{ANSI.green}" \
+                                                "{G}" \
+                                                f"{ANSI.reset}"\
+                        + newManaCost[index+2:]
+
+    return newManaCost
+
 
 while True:
     delimiter = ","  # the delimiter between every card
@@ -483,8 +532,8 @@ while True:
     for card in sortedCards:
         if ((card["# GIH"] > 500 and
              card["# GNS"] > 500) or
-            (card["# OH"] > 500) or
-            (card["# GD"] > 500)):
+                (card["# OH"] > 500) or
+                (card["# GD"] > 500)):
             # calculate and set zScores and grades for GIH WR% (game in hand
             # winrate), OH WR% (opening hand winrate), and IWD (improvement
             # when drawn).
@@ -501,21 +550,21 @@ while True:
             print(
                 f"{ANSI.dimWhite}{card['# GIH']:>6}{ANSI.reset} "  # sample size
                 f"{ANSI.dimWhite}|{ANSI.reset}",
-              ((f"{gradeGIH} "
-                f"{ANSI.dimWhite}{float(zScoreGIH): 6.3f}{ANSI.reset} "
-                f"{card['GIH WR']}") if card['GIH WR'] else
-                f"               "),
+                ((f"{gradeGIH} "
+                  f"{ANSI.dimWhite}{float(zScoreGIH): 6.3f}{ANSI.reset} "
+                  f"{card['GIH WR']}") if card['GIH WR'] else
+                 f"               "),
                 f"{ANSI.dimWhite}|{ANSI.reset}",
-              ((f"{gradeOH} "
-                f"{ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} "
-                f"{card['OH WR']}") if card['OH WR'] else
-                f"               "),
+                ((f"{gradeOH} "
+                  f"{ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} "
+                  f"{card['OH WR']}") if card['OH WR'] else
+                 f"               "),
                 f"{ANSI.dimWhite}|{ANSI.reset} "
                 f"{gradeIWD}",
-              ((f"{ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} "
-                f"{float(card['IWD'][:-2]): >6.2f}"
-                f"{ANSI.dimWhite}pp{ANSI.reset}") if card['IWD'] else
-                f"                 "),
+                ((f"{ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} "
+                  f"{float(card['IWD'][:-2]): >6.2f}"
+                  f"{ANSI.dimWhite}pp{ANSI.reset}") if card['IWD'] else
+                 f"                 "),
                 f"{ANSI.dimWhite}|{ANSI.reset} "
                 f"{card['colorPair'] if singleCard else card['Name']}")
 
@@ -533,11 +582,13 @@ while True:
                       f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
                       f"{'color pair' if singleCard else 'name'}")  # end of table
 
+    # if we're supposed to show oracle text, do it!
     if showOracleText:
         # show all relevant information
-        try:
+        try:  # this could be a double-faced card. if it is, then
             scryfallCardData = scryfallDict[cardName]
-            print(f"\n{cardName} {scryfallCardData['mana_cost']}")
+            print(f"\n{cardName} "
+                  f"{applyANSIToManaCost(scryfallCardData['mana_cost'])}")
             print(scryfallCardData["type_line"])
             print(scryfallCardData["oracle_text"])
             print("")  # newline
@@ -547,8 +598,10 @@ while True:
             scryfallCardData = scryfallDict[cardMatch]
 
             for cardFace in scryfallDict[cardMatch]['card_faces']:
-                print(f"\n{cardFace['name']} {cardFace['mana_cost']}")
+                print(f"\n{cardFace['name']} {applyANSIToManaCost(cardFace['mana_cost'])}")
                 print(cardFace["type_line"])
                 print(cardFace["oracle_text"])
 
             print("")  # newline
+
+
