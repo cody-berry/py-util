@@ -27,7 +27,6 @@ def compareCards(card1, card2):
                 return 0
 
 import ANSI
-import os
 
 # calculate the grade based on the z-score
 def calculateGrade(zScore):
@@ -81,34 +80,35 @@ def calculateGrade(zScore):
     return result
 
 
-colorPairs = ["WU", "WB", "WR", "WG",
-              "UB", "UR", "UG",
-              "BR", "BG",
-              "RG"]
+colors = ["W", "U", "B", "R", "G"]
 
 import functools
 
 numCards = 200
-while numCards > 100:
-    numCards = int(input("Please enter the number of cards you want to display for each archetype, not over 100. "))
+while numCards > 30:
+    numCards = int(input("Please enter the number of cards you want to display for each card, not over 30. "))
 
-for colorPair in colorPairs:
-    print(f"\n🥏Color pair: {colorPair}")
-    with open(f"cardRatingsAll/{colorPair}.json") as data:
+for color in colors:
+    print(f"\n🥏Color: {color}")
+    with open(f"cardRatingsAll/all.json") as data:
         sortedCards = []
         jsonData = json.load(data)
         for cardName, cardData in jsonData["cardData"].items():
-            if (cardData["# GIH"] > 500 and cardData["# GNS"] > 500) and (cardData["Rarity"] == "common" or cardData["Rarity"] == "uncommon"):
+            if (cardData["# GIH"] > 500 and cardData["# GNS"] > 500) and (cardData["Rarity"] == "common" or cardData["Rarity"] == "uncommon") and (color in cardData["Color"]):
                 sortedCards.append(cardData)
         sortedCards = sorted(sortedCards,
                              key=functools.cmp_to_key(compareCards))
-        print(f"     {ANSI.dimWhite}n{ANSI.reset} {ANSI.dimWhite}|{ANSI.reset} "
-              f"GIH WR%         {ANSI.dimWhite}|{ANSI.reset} "
-              f"OH WR%          {ANSI.dimWhite}|{ANSI.reset} "
-              f"IWD                {ANSI.dimWhite}|{ANSI.reset} "
-              f"name")
+        print(f"     {ANSI.dimWhite}n{ANSI.reset}"  # 6 spaces for n
+              f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
+              f"GIH WR         "  # spaces needed: 3 (grade) + 7 (z-score) + 5 (GIH WR%) = 15
+              f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
+              f"OH WR          "  # spaces needed: 3 (grade) + 7 (z-score) + 5 (OH WR%) = 15
+              f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
+              f"IWD               "  # spaces needed: 3 (grade) + 7 (z-score) + 8 (IWD) = 18
+              f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
+              f"name")  # end of table
 
-        for i in range(numCards):  # print 30 cards
+        for i in range(numCards):  # print cards
             card = sortedCards[i]
             zScoreGIH = f"{card['zScoreGIH']:5}"
             zScoreOH = f"{card['zScoreOH']:5}"
@@ -122,12 +122,22 @@ for colorPair in colorPairs:
 
             print(
                 f"{ANSI.dimWhite}{card['# GIH']:>6}{ANSI.reset} "  # sample size
+                f"{ANSI.dimWhite}|{ANSI.reset}",
+                ((f"{gradeGIH} "
+                  f"{ANSI.dimWhite}{float(zScoreGIH): 6.3f}{ANSI.reset} "
+                  f"{card['GIH WR']}") if card['GIH WR'] else
+                 f"Not enough data"),
+                f"{ANSI.dimWhite}|{ANSI.reset}",
+                ((f"{gradeOH} "
+                  f"{ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} "
+                  f"{card['OH WR']}") if card['OH WR'] else
+                 f"Not enough data"),
                 f"{ANSI.dimWhite}|{ANSI.reset} "
-                f"{gradeGIH} {ANSI.dimWhite}{float(zScoreGIH): 6.3f}{ANSI.reset} {card['GIH WR']} "
-                f"{ANSI.dimWhite}|{ANSI.reset} "
-                f"{gradeIWD} {ANSI.dimWhite}{float(zScoreOH): 6.3f}{ANSI.reset} {card['OH WR']} "
-                f"{ANSI.dimWhite}|{ANSI.reset} "
-                f"{gradeOH} {ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} {float(card['IWD'][:-2]): >6.2f}{ANSI.dimWhite}pp{ANSI.reset} "
+                f"{gradeIWD}",
+                ((f"{ANSI.dimWhite}{float(zScoreIWD): 6.3f}{ANSI.reset} "
+                  f"{float(card['IWD'][:-2]): >6.2f}"
+                  f"{ANSI.dimWhite}pp{ANSI.reset}") if card['IWD'] else
+                 f"Not enough data  "),
                 f"{ANSI.dimWhite}|{ANSI.reset} "
                 f"{card['Name']}")
 

@@ -1,17 +1,124 @@
-import requests
+colorData = [
+    {"is_summary": True, "color_name": "Mono-color", "wins": 561, "games": 957},
+    {"is_summary": False, "color_name": "Mono-White", "wins": 89, "games": 161},
+    {"is_summary": False, "color_name": "Mono-Blue", "wins": 20, "games": 47},
+    {"is_summary": False, "color_name": "Mono-Black", "wins": 113,
+     "games": 164},
+    {"is_summary": False, "color_name": "Mono-Red", "wins": 259, "games": 435},
+    {"is_summary": False, "color_name": "Mono-Green", "wins": 80, "games": 150},
+    {"is_summary": True, "color_name": "Mono-color + Splash", "wins": 2078,
+     "games": 3586},
+    {"is_summary": False, "color_name": "Mono-White + Splash", "wins": 210,
+     "games": 401},
+    {"is_summary": False, "color_name": "Mono-Blue + Splash", "wins": 155,
+     "games": 324},
+    {"is_summary": False, "color_name": "Mono-Black + Splash", "wins": 215,
+     "games": 362},
+    {"is_summary": False, "color_name": "Mono-Red + Splash", "wins": 965,
+     "games": 1555},
+    {"is_summary": False, "color_name": "Mono-Green + Splash", "wins": 533,
+     "games": 944},
+    {"is_summary": True, "color_name": "Two-color", "wins": 63474,
+     "games": 114067},
+    {"is_summary": False, "color_name": "Azorius (WU)", "wins": 3743,
+     "games": 7393},
+    {"is_summary": False, "color_name": "Dimir (UB)", "wins": 6511,
+     "games": 12158},
+    {"is_summary": False, "color_name": "Rakdos (BR)", "wins": 11491,
+     "games": 19918},
+    {"is_summary": False, "color_name": "Gruul (RG)", "wins": 4254,
+     "games": 7483},
+    {"is_summary": False, "color_name": "Selesnya (GW)", "wins": 4594,
+     "games": 8433},
+    {"is_summary": False, "color_name": "Orzhov (WB)", "wins": 7330,
+     "games": 13618},
+    {"is_summary": False, "color_name": "Golgari (BG)", "wins": 10486,
+     "games": 18091},
+    {"is_summary": False, "color_name": "Simic (GU)", "wins": 2446,
+     "games": 4692},
+    {"is_summary": False, "color_name": "Izzet (UR)", "wins": 4350,
+     "games": 8063},
+    {"is_summary": False, "color_name": "Boros (RW)", "wins": 8269,
+     "games": 14218},
+    {"is_summary": True, "color_name": "Two-color + Splash", "wins": 58480,
+     "games": 104120},
+    {"is_summary": False, "color_name": "Azorius (WU) + Splash", "wins": 2093,
+     "games": 4078},
+    {"is_summary": False, "color_name": "Dimir (UB) + Splash", "wins": 3986,
+     "games": 7390},
+    {"is_summary": False, "color_name": "Rakdos (BR) + Splash", "wins": 9275,
+     "games": 15792},
+    {"is_summary": False, "color_name": "Gruul (RG) + Splash", "wins": 8584,
+     "games": 14929},
+    {"is_summary": False, "color_name": "Selesnya (GW) + Splash", "wins": 5631,
+     "games": 10276},
+    {"is_summary": False, "color_name": "Orzhov (WB) + Splash", "wins": 3457,
+     "games": 6528},
+    {"is_summary": False, "color_name": "Golgari (BG) + Splash", "wins": 10021,
+     "games": 17686},
+    {"is_summary": False, "color_name": "Simic (GU) + Splash", "wins": 4254,
+     "games": 7953},
+    {"is_summary": False, "color_name": "Izzet (UR) + Splash", "wins": 4716,
+     "games": 8534},
+    {"is_summary": False, "color_name": "Boros (RW) + Splash", "wins": 6463,
+     "games": 10954},
+    {"is_summary": True, "color_name": "Three-color", "wins": 5670,
+     "games": 10780},
+    {"is_summary": False, "color_name": "Jeskai (WUR)", "wins": 286,
+     "games": 504},
+    {"is_summary": False, "color_name": "Sultai (UBG)", "wins": 843,
+     "games": 1543},
+    {"is_summary": False, "color_name": "Mardu (BRW)", "wins": 313,
+     "games": 635},
+    {"is_summary": False, "color_name": "Temur (RGU)", "wins": 341,
+     "games": 730},
+    {"is_summary": False, "color_name": "Abzan (GWB)", "wins": 1457,
+     "games": 2703},
+    {"is_summary": False, "color_name": "Esper (WUB)", "wins": 470,
+     "games": 989},
+    {"is_summary": False, "color_name": "Grixis (UBR)", "wins": 277,
+     "games": 555},
+    {"is_summary": False, "color_name": "Jund (BRG)", "wins": 971,
+     "games": 1749},
+    {"is_summary": False, "color_name": "Naya (RGW)", "wins": 347,
+     "games": 638},
+    {"is_summary": False, "color_name": "Bant (GWU)", "wins": 365,
+     "games": 734},
+    {"is_summary": True, "color_name": "Three-color + Splash", "wins": 3453,
+     "games": 6427},
+    {"is_summary": False, "color_name": "Jeskai (WUR) + Splash", "wins": 109,
+     "games": 202},
+    {"is_summary": False, "color_name": "Sultai (UBG) + Splash", "wins": 436,
+     "games": 823},
+    {"is_summary": False, "color_name": "Mardu (BRW) + Splash", "wins": 203,
+     "games": 397},
+    {"is_summary": False, "color_name": "Temur (RGU) + Splash", "wins": 529,
+     "games": 963},
+    {"is_summary": False, "color_name": "Abzan (GWB) + Splash", "wins": 597,
+     "games": 1122},
+    {"is_summary": False, "color_name": "Esper (WUB) + Splash", "wins": 131,
+     "games": 271},
+    {"is_summary": False, "color_name": "Grixis (UBR) + Splash", "wins": 146,
+     "games": 291},
+    {"is_summary": False, "color_name": "Jund (BRG) + Splash", "wins": 695,
+     "games": 1232},
+    {"is_summary": False, "color_name": "Naya (RGW) + Splash", "wins": 302,
+     "games": 559},
+    {"is_summary": False, "color_name": "Bant (GWU) + Splash", "wins": 305,
+     "games": 567},
+    {"is_summary": True, "color_name": "Four-color", "wins": 174, "games": 303},
+    {"is_summary": True, "color_name": "Four-color + Splash", "wins": 94,
+     "games": 153},
+    {"is_summary": True, "color_name": "Five-color", "wins": 16, "games": 31},
+    {"is_summary": True, "color_name": "All Decks", "wins": 134000,
+     "games": 240424}]
 
-def fetchData(url):
-    response = requests.get(url)
+print("[")
+for element in colorData:
+    print("{")
 
-    # checks if the data is valid or not (200 is a successful status code)
-    if response.status_code == 200:
-        data = response.json()
-        print("Data successfully loaded")
-        return data
-    else:
-        # if not, print that it failed to fetch data
-        print("Failed to fetch data. Error code", response.status_code)
-        return None
+    for elementTwo in element.items():
+        print(elementTwo[0] + ":", str(elementTwo[1]) + ",")
 
-print(fetchData(f'https://www.17lands.com/card_ratings/data?expansion=LTR'
-                f'&format=PremierDraft'))
+    print("},\n")
+print("]")

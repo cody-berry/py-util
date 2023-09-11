@@ -281,6 +281,7 @@ with open("cardRatingsTop/lastUpdated.json", "r") as lastUpdated:
     print(
         f"Updated cardRatingsTop {format_time_difference(currentTime - lastUpdatedTime)}")
 
+
 # makes W ANSI.pureWhite, U ANSI.blue, B ANSI.dimWhite, R ANSI.red, and G ANSI.green.
 def applyANSIToManaCost(manaCost):
     indicesToModify = []
@@ -299,35 +300,35 @@ def applyANSIToManaCost(manaCost):
         index += 1
 
     newManaCost = manaCost
-    for i in range(len(indicesToModify)-1, -1, -1):
+    for i in range(len(indicesToModify) - 1, -1, -1):
         element = indicesToModify[i]
         letter = element[1]
         index = element[0]
         if letter == "W":
-            newManaCost = newManaCost[:index-1] + f"{ANSI.pureWhite}" \
-                                                "{W}" \
-                                                f"{ANSI.reset}"\
-                        + newManaCost[index+2:]
+            newManaCost = newManaCost[:index - 1] + f"{ANSI.pureWhite}" \
+                                                    "{W}" \
+                                                    f"{ANSI.reset}" \
+                          + newManaCost[index + 2:]
         if letter == "U":
-            newManaCost = newManaCost[:index-1] + f"{ANSI.blue}" \
-                                                "{U}" \
-                                                f"{ANSI.reset}"\
-                        + newManaCost[index+2:]
+            newManaCost = newManaCost[:index - 1] + f"{ANSI.blue}" \
+                                                    "{U}" \
+                                                    f"{ANSI.reset}" \
+                          + newManaCost[index + 2:]
         if letter == "B":
-            newManaCost = newManaCost[:index-1] + f"{ANSI.dimWhite}" \
-                                                "{B}" \
-                                                f"{ANSI.reset}"\
-                        + newManaCost[index+2:]
+            newManaCost = newManaCost[:index - 1] + f"{ANSI.dimWhite}" \
+                                                    "{B}" \
+                                                    f"{ANSI.reset}" \
+                          + newManaCost[index + 2:]
         if letter == "R":
-            newManaCost = newManaCost[:index-1] + f"{ANSI.red}" \
-                                                "{R}" \
-                                                f"{ANSI.reset}"\
-                        + newManaCost[index+2:]
+            newManaCost = newManaCost[:index - 1] + f"{ANSI.red}" \
+                                                    "{R}" \
+                                                    f"{ANSI.reset}" \
+                          + newManaCost[index + 2:]
         if letter == "G":
-            newManaCost = newManaCost[:index-1] + f"{ANSI.green}" \
-                                                "{G}" \
-                                                f"{ANSI.reset}"\
-                        + newManaCost[index+2:]
+            newManaCost = newManaCost[:index - 1] + f"{ANSI.green}" \
+                                                    "{G}" \
+                                                    f"{ANSI.reset}" \
+                          + newManaCost[index + 2:]
 
     return newManaCost
 
@@ -580,7 +581,7 @@ while True:
                       f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
                       f"IWD               "  # spaces needed: 3 (grade) + 7 (z-score) + 8 (IWD) = 18
                       f" {ANSI.dimWhite}|{ANSI.reset} "  # splitter
-                      f"{'color pair' if singleCard else 'name'}")  # end of table
+                      f"name")  # end of table
 
     # if we're supposed to show oracle text, do it!
     if showOracleText:
@@ -591,6 +592,9 @@ while True:
                   f"{applyANSIToManaCost(scryfallCardData['mana_cost'])}")
             print(scryfallCardData["type_line"])
             print(scryfallCardData["oracle_text"])
+            print((f"{ANSI.dimWhite}"
+                   f"{scryfallCardData['flavor_text']}"
+                   f"{ANSI.reset}") if "flavor_text" in scryfallCardData else "")
             print("")  # newline
         except KeyError:
             # this is a double-faced card
@@ -598,10 +602,12 @@ while True:
             scryfallCardData = scryfallDict[cardMatch]
 
             for cardFace in scryfallDict[cardMatch]['card_faces']:
-                print(f"\n{cardFace['name']} {applyANSIToManaCost(cardFace['mana_cost'])}")
+                print(
+                    f"\n{cardFace['name']} {applyANSIToManaCost(cardFace['mana_cost'])}")
                 print(cardFace["type_line"])
                 print(cardFace["oracle_text"])
+                print((f"{ANSI.dimWhite}"
+                       f"{cardFace['flavor_text']}"
+                       f"{ANSI.reset}") if "flavor_text" in cardFace else "")
 
             print("")  # newline
-
-
