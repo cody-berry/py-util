@@ -332,6 +332,15 @@ def applyANSIToManaCost(manaCost):
 
     return newManaCost
 
+# repeatedly remove everything in parens from a string
+def removeReminderText(oracleText):
+    try:
+        while True:
+            indexOfNextOpenParen = oracleText.index("(")
+            indexOfNextCloseParen = oracleText.index(")")
+            oracleText = oracleText[:indexOfNextOpenParen] + oracleText[indexOfNextCloseParen + 1:]
+    except ValueError:
+        return oracleText
 
 while True:
     delimiter = ","  # the delimiter between every card
@@ -591,7 +600,7 @@ while True:
             print(f"\n{cardName} "
                   f"{applyANSIToManaCost(scryfallCardData['mana_cost'])}")
             print(scryfallCardData["type_line"])
-            print(scryfallCardData["oracle_text"])
+            print(removeReminderText(scryfallCardData["oracle_text"]))
             print((f"{ANSI.dimWhite}"
                    f"{scryfallCardData['flavor_text']}"
                    f"{ANSI.reset}") if "flavor_text" in scryfallCardData else "")
@@ -605,7 +614,7 @@ while True:
                 print(
                     f"\n{cardFace['name']} {applyANSIToManaCost(cardFace['mana_cost'])}")
                 print(cardFace["type_line"])
-                print(cardFace["oracle_text"])
+                print(removeReminderText(cardFace["oracle_text"]))
                 print((f"{ANSI.dimWhite}"
                        f"{cardFace['flavor_text']}"
                        f"{ANSI.reset}") if "flavor_text" in cardFace else "")
