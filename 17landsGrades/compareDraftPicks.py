@@ -332,6 +332,7 @@ def applyANSIToManaCost(manaCost):
 
     return newManaCost
 
+
 # repeatedly remove everything in parens from a string
 def removeReminderText(oracleText):
     try:
@@ -341,6 +342,7 @@ def removeReminderText(oracleText):
             oracleText = oracleText[:indexOfNextOpenParen] + oracleText[indexOfNextCloseParen + 1:]
     except ValueError:
         return oracleText
+
 
 while True:
     delimiter = ","  # the delimiter between every card

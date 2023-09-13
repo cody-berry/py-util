@@ -9,7 +9,6 @@ def hyperGeoExact(deckSize, sampleSize, successes, successesToDraw, indents):
             print(indents * " |",
                   "🍑 1 → There is no draws left and we're exactly right")
             return 1
-        # otherwise...
         else:
             # return the chance to not draw the card we want times hyperGeoExact
             # with one less deckSize and one less sample size.
@@ -74,12 +73,16 @@ def probabilityOr(a, b):
     return a + (1 - a) * b
 
 
+
 def hyperAtLeast(deckSize, sampleSize, successes, minSuccesses):
     return sum([hyperGeoExact(deckSize, sampleSize, successes, i, 1) for i in
                 range(minSuccesses, successes + 1)])
 
 
-while True: print(" 🍆", hyperAtLeast(int(input("Deck size ")),
-                                     int(input("Sample size ")),
-                                     int(input("Successes in deck ")),
-                                     int(input("Wanted successes "))))
+while True:
+    print(
+        " 🍆", hyperAtLeast(
+            int(input("Deck size ")),
+            int(input("Sample size ")),
+            int(input("Successes in deck ")),
+            int(input("Wanted successes "))))
