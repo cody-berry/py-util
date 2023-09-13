@@ -10,10 +10,12 @@ def hyperGeoExact(deckSize, sampleSize, successes, successesToDraw, indents):
                   "🍑 1 → There is no draws left and we're exactly right")
             return 1
         else:
+            print(indents * " |", "🍉")
             # return the chance to not draw the card we want times hyperGeoExact
             # with one less deckSize and one less sample size.
-            print(indents * " |", "🍉", (1 - successes / deckSize) ** sampleSize)
-            return (1 - successes / deckSize) ** sampleSize
+            recursiveWhenNotDrawn = hyperGeoExact(deckSize-1, sampleSize-1, successes, successesToDraw, indents+1)
+            print(indents * " |", "🍉", (1 - successes / deckSize) * recursiveWhenNotDrawn, "← Chance to not draw any more")
+            return (1 - successes / deckSize) * recursiveWhenNotDrawn
 
     # if the number of successes in deck is 0, there is no chance that we're
     # going to draw one.
@@ -37,7 +39,7 @@ def hyperGeoExact(deckSize, sampleSize, successes, successesToDraw, indents):
     # otherwise, return the probability that either you don't draw the wanted
     # card so there is one less deck size and one less sample size, or you draw
     # the wanted card so there is one less deck size, one less sample size, and
-    # one less successes left to draw.
+    # one less success left to draw.
     recursiveWhenDrawn = hyperGeoExact(deckSize - 1, sampleSize - 1,
                                        successes - 1,
                                        successesToDraw - 1,
@@ -62,15 +64,14 @@ def hyperGeoExact(deckSize, sampleSize, successes, successesToDraw, indents):
     print(indents * " |", "🍇",
           recursiveWhenNotDrawn * ((deckSize - successes) / deckSize))
 
-    return probabilityOr(
-        (successes / deckSize) * recursiveWhenDrawn,
+    return\
+        (successes / deckSize) * recursiveWhenDrawn +\
         ((deckSize - successes) / deckSize) * recursiveWhenNotDrawn
-    )
 
 
 # returns the "or" of 2 probabilities (a and b).
 def probabilityOr(a, b):
-    return a + (1 - a) * b
+    return a + b - a*b
 
 
 
@@ -79,7 +80,10 @@ def hyperAtLeast(deckSize, sampleSize, successes, minSuccesses):
                 range(minSuccesses, successes + 1)])
 
 
+
+
 while True:
+    print("\033[2J")
     print(
         " 🍆", hyperAtLeast(
             int(input("Deck size ")),
