@@ -12,11 +12,6 @@ ax.set_title('Normal Distribution', size=20)
 ax.set_ylabel('Probability Density', size=20)
 plt.show()
 
-
-def normalProbabilityDensity(i):
-    coefficient = 1.0/np.sqrt(2*np.pi)
-    return coefficient * np.exp((-i**2) / 2)
-
 while True:
     percentile = float(input('percentile:'))
     print(stats.norm.ppf(percentile/100, loc=0, scale=1))

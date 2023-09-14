@@ -1,4 +1,5 @@
-# the purpose of this file is to calculate a hypergeometric probability.
+# calculate the probability to draw exactly the number of successes we want to
+# draw.
 def hyperExact(deckSize, sampleSize, successes, successesToDraw):
     # if the successes we need to draw is 0...
     if successesToDraw == 0:
@@ -44,12 +45,9 @@ def hyperExact(deckSize, sampleSize, successes, successesToDraw):
         (successes / deckSize) * recursiveWhenDrawn +\
         ((deckSize - successes) / deckSize) * recursiveWhenNotDrawn
 
-
 # returns the "or" of 2 probabilities (a and b).
 def probabilityOr(a, b):
     return a + b - a*b
-
-
 
 def hyperAtLeast(deckSize, sampleSize, successes, minSuccesses):
     return sum([hyperExact(deckSize, sampleSize, successes, i) for i in
@@ -61,7 +59,6 @@ def hyperAtMost(deckSize, sampleSize, successes, maxSuccesses):
 
 def hyperZero(deckSize, sampleSize, successes):
     return hyperExact(deckSize, sampleSize, successes, 0)
-
 
 def roundNumberToThreeDigitsTotal(number):
     # Determine the number of digits in the integer part
@@ -85,41 +82,13 @@ def roundNumberToThreeDigitsTotal(number):
 
     return formatted_number
 
+import scipy.stats as stats
+import numpy as np
+from scipy.integrate import quad
 
-
-while True:
-    print("\033[2J")
-    deckSize = int(input("Deck size "))
-    # sample code used to determine that the sample size hasn't been set
-    sampleSize = "1000"
-    while int(sampleSize) > 995:
-        if not sampleSize == "1000":
-            print("Too big. Maximum sample size is 995.")
-        sampleSize = int(input("Sample size "))
-    successes = int(input("Successes in deck "))
-    successesWanted = int(input("Wanted successes "))
-    print(
-        f"🍆 Chance to draw at least {successesWanted} of the wanted cards:", roundNumberToThreeDigitsTotal((hyperAtLeast(
-            deckSize,
-            sampleSize,
-            successes,
-            successesWanted))*100) + "%")
-    print(
-        f"🍆 Chance to draw exactly {successesWanted} of the wanted cards:", roundNumberToThreeDigitsTotal((hyperExact(
-            deckSize,
-            sampleSize,
-            successes,
-            successesWanted))*100) + "%")
-    print(
-        f"🍆 Chance to draw at most {successesWanted} of the wanted cards:", roundNumberToThreeDigitsTotal((hyperAtMost(
-            deckSize,
-            sampleSize,
-            successes,
-            successesWanted))*100) + "%")
-    print(
-        f"🍆 Chance to draw 0 of the wanted cards:", roundNumberToThreeDigitsTotal((hyperZero(
-            deckSize,
-            sampleSize,
-            successes))*100) + "%")
+# defines the normal distribution we're using
+def normalProbabilityDensity(i):
+    coefficient = 1.0/np.sqrt(2*np.pi)
+    return coefficient * np.exp((-i**2) / 2)
 
 
