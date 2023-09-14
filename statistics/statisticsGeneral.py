@@ -102,5 +102,63 @@ while True:
     try:
         mode = int(input("Please choose a mode. "))
         assert mode in [1, 2, 3, 4, 5]
+        if mode == 1:
+            lowerBound = float(input('lower integration bound:'))
+            upperBound = float(input('upper integration bound:'))
+            print(quad(normalProbabilityDensity, lowerBound, upperBound))
+            print("")
+        if mode == 2:
+            value = float(input("Value you want to find the z-score of:"))
+            μ = float(input("Mean of the distribution:"))
+            σ = float(input("Standard deviation of the distribution:"))
+            print((value-μ)/σ)
+            print("")
+        if mode == 3:
+            zScore = float(input("Z-score you want to find the value of:"))
+            μ = float(input("Mean of the distribution:"))
+            σ = float(input("Standard deviation of the distribution:"))
+            print(zScore*σ + μ)
+            print("")
+        if mode == 4:
+            percentile = float(input('percentile:'))
+            print(stats.norm.ppf(percentile / 100, loc=0, scale=1))
+        if mode == 5:
+            deckSize = int(input("Deck size "))
+            # sample code used to determine that the sample size hasn't been set
+            sampleSize = "1000"
+            while int(sampleSize) > 995:
+                if not sampleSize == "1000":
+                    print("Too big. Maximum sample size is 995.")
+                sampleSize = int(input("Sample size "))
+            successes = int(input("Successes in deck "))
+            successesWanted = int(input("Wanted successes "))
+            print(
+                f"🍆 Chance to draw at least {successesWanted} of the wanted cards:",
+                roundNumberToThreeDigitsTotal((hyperAtLeast(
+                    deckSize,
+                    sampleSize,
+                    successes,
+                    successesWanted)) * 100) + "%")
+            print(
+                f"🍆 Chance to draw exactly {successesWanted} of the wanted cards:",
+                roundNumberToThreeDigitsTotal((hyperExact(
+                    deckSize,
+                    sampleSize,
+                    successes,
+                    successesWanted)) * 100) + "%")
+            print(
+                f"🍆 Chance to draw at most {successesWanted} of the wanted cards:",
+                roundNumberToThreeDigitsTotal((hyperAtMost(
+                    deckSize,
+                    sampleSize,
+                    successes,
+                    successesWanted)) * 100) + "%")
+            print(
+                f"🍆 Chance to draw 0 of the wanted cards:",
+                roundNumberToThreeDigitsTotal((hyperZero(
+                    deckSize,
+                    sampleSize,
+                    successes)) * 100) + "%")
+            print("")
     except:
         print("The mode chosen is invalid. You must choose a mode from 1 to 5. \n")
