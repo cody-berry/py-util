@@ -63,6 +63,29 @@ def hyperZero(deckSize, sampleSize, successes):
     return hyperExact(deckSize, sampleSize, successes, 0)
 
 
+def roundNumberToThreeDigitsTotal(number):
+    # Determine the number of digits in the integer part
+    numDigitsBeforeDecimalPoint = len(str(int(number)))
+
+    # Determine the number of decimal places based on the integer part
+    if numDigitsBeforeDecimalPoint >= 3:
+        decimalPlaces = 0
+    elif numDigitsBeforeDecimalPoint == 2:
+        decimalPlaces = 1
+    elif numDigitsBeforeDecimalPoint == 1:
+        decimalPlaces = 2
+    else:
+        decimalPlaces = 3
+
+    # Round the number based on the determined decimal places
+    rounded_number = round(number, decimalPlaces)
+
+    # Format the number with the determined decimal places
+    formatted_number = f'{rounded_number:.{decimalPlaces}f}'
+
+    return formatted_number
+
+
 while True:
     print("\033[2J")
     deckSize = int(input("Deck size "))
@@ -75,25 +98,27 @@ while True:
     successes = int(input("Successes in deck "))
     successesWanted = int(input("Wanted successes "))
     print(
-        f"🍆 Chance to draw at least {successesWanted} of the wanted cards:", str((hyperAtLeast(
+        f"🍆 Chance to draw at least {successesWanted} of the wanted cards:", roundNumberToThreeDigitsTotal((hyperAtLeast(
             deckSize,
             sampleSize,
             successes,
             successesWanted))*100) + "%")
     print(
-        f"🍆 Chance to draw exactly {successesWanted} of the wanted cards:", str((hyperExact(
+        f"🍆 Chance to draw exactly {successesWanted} of the wanted cards:", roundNumberToThreeDigitsTotal((hyperExact(
             deckSize,
             sampleSize,
             successes,
             successesWanted))*100) + "%")
     print(
-        f"🍆 Chance to draw at most {successesWanted} of the wanted cards:", str((hyperAtMost(
+        f"🍆 Chance to draw at most {successesWanted} of the wanted cards:", roundNumberToThreeDigitsTotal((hyperAtMost(
             deckSize,
             sampleSize,
             successes,
             successesWanted))*100) + "%")
     print(
-        f"🍆 Chance to draw 0 of the wanted cards:", str((hyperZero(
+        f"🍆 Chance to draw 0 of the wanted cards:", roundNumberToThreeDigitsTotal((hyperZero(
             deckSize,
             sampleSize,
             successes))*100) + "%")
+
+
