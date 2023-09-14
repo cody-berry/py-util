@@ -91,4 +91,16 @@ def normalProbabilityDensity(i):
     coefficient = 1.0/np.sqrt(2*np.pi)
     return coefficient * np.exp((-i**2) / 2)
 
-
+while True:
+    # choose between modes
+    print("Choose between these modes:")
+    print("1. Calculate the probability of landing between 2 z-scores")
+    print("2. Calculate a z-score from a distribution and a value")
+    print("3. Calculate a value from a distribution and a z-score")
+    print("4. Calculate a z-score from a percentile")
+    print("5. Calculate the hypergeometric probability based on all the hypergeometric arguments")
+    try:
+        mode = int(input("Please choose a mode. "))
+        assert mode in [1, 2, 3, 4, 5]
+    except:
+        print("The mode chosen is invalid. You must choose a mode from 1 to 5. \n")
