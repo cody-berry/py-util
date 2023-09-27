@@ -3,10 +3,10 @@ import json
 # define the amount of diff between the top zScore and the all zScore
 # to make it a secret top card.
 minDiff = 0
-while minDiff <= 0:
+while minDiff < 1 or minDiff > 2:
     try:
         minDiff = float(input(
-            "Enter the maximum diff between the highest z-score and the other color pairs."))
+            "Enter the minimum diff between the top z-score and the all z-score, between 1 and 2 (inclusive)."))
     except:
         print("Please enter an integer. ")
         pass
@@ -38,7 +38,7 @@ with open("cardRatingsTop/master.json") as top:
                     # say that this card is a secret golden card with the
                     # highest color pair.
                     print(
-                        f"{cardName} is a secret top player card!")
+                        f"{cardName} is a secret top player card! The z-score difference for this card is {round(topZScore - allZScore, 2)}.")
             print("\n")
 
 
