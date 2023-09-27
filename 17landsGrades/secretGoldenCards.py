@@ -3,10 +3,11 @@ import json
 # define the amount of diff between the second highest zScore and the highest
 # zScore to make it a secret gold card.
 minDiff = 0
-while not minDiff:
+while minDiff <= 0:
     try:
         minDiff = float(input("Enter the maximum diff between the highest z-score and the other color pairs."))
     except:
+        print("Please enter an integer. ")
         pass
 
 # open the master json for all
