@@ -60,6 +60,12 @@ def hyperAtMost(deckSize, sampleSize, successes, maxSuccesses):
 def hyperZero(deckSize, sampleSize, successes):
     return hyperExact(deckSize, sampleSize, successes, 0)
 
+def standardDev(mean, *table):
+    variation = 0
+    for element in table:
+        variation += ((element[0] - mean)**2)*(element[1])
+    return sqrt(variation)
+
 def roundNumberToThreeDigitsTotal(number):
     # Determine the number of digits in the integer part
     numDigitsBeforeDecimalPoint = len(str(int(number)))
@@ -82,9 +88,13 @@ def roundNumberToThreeDigitsTotal(number):
 
     return formatted_number
 
+def shiftAndScaleMeanAndStandardDeviation(μ, σ, shift, scale):
+    return [(μ*scale + shift), (σ*scale)]
+
 import scipy.stats as stats
 import numpy as np
 from scipy.integrate import quad
+from math import sqrt
 
 # defines the normal distribution we're using
 def normalProbabilityDensity(i):
@@ -99,9 +109,11 @@ while True:
     print("3. Calculate a value from a distribution and a z-score")
     print("4. Calculate a z-score from a percentile")
     print("5. Calculate the hypergeometric probability based on all the hypergeometric arguments")
+    print("6. Calculate the standard deviation of a table based on its mean and its elements' values and probabilities. ")
+    print("7. Shift and scale a mean and standard deviation")
     try:
         mode = int(input("Please choose a mode. "))
-        assert mode in [1, 2, 3, 4, 5]
+        assert mode in [1, 2, 3, 4, 5, 6, 7]
         if mode == 1:
             lowerBound = float(input('lower integration bound:'))
             upperBound = float(input('upper integration bound:'))
@@ -160,5 +172,22 @@ while True:
                     sampleSize,
                     successes)) * 100) + "%")
             print("")
+        if mode == 6:
+            mean = float(input("Mean of distribution: "))
+            table = []
+            try:
+                while True:
+                    table.append([float(input("Element value: ")),
+                                  float(input("Element probability: "))])
+            except:
+                pass
+            print(standardDev(mean, *table))
+        if mode == 7:
+            print(shiftAndScaleMeanAndStandardDeviation(
+                float(input("Mean of distribution: ")),
+                float(input("Standard deviation of distribution: ")),
+                float(input("Shift of new distribution: ")),
+                float(input("Scale of new distribution: "))
+            ))
     except:
-        print("The mode chosen is invalid. You must choose a mode from 1 to 5. \n")
+        print("The mode chosen is invalid. You must choose a mode from 1 to 6. \n")

@@ -32,11 +32,11 @@ def fetchData(url):
 
 
 # the url that handles the expansion for the current set
-baseURL = (f'https://www.17lands.com/card_ratings/data?expansion=WOE'
+baseURL = (f'https://www.17lands.com/card_ratings/data?expansion=LCI'
            '&format=PremierDraft&user_group=top')
 baseURLBonusSheet = (f'https://www.17lands.com/card_ratings/data?expansion=WOT'
                      f'&format=PremierDraft&user_group=top')
-bonusSheetToggle = True
+bonusSheetToggle = False
 print(baseURL)
 
 
@@ -85,19 +85,18 @@ def processData(data):
     GIH_WRs = []
     IWDs = []
     for card in data:
-        cardAlternate = {}
-        cardAlternate["Name"] = card["name"]
-        cardAlternate["Color"] = card["color"]
-        cardAlternate["Rarity"] = card["rarity"]
-        cardAlternate["# GIH"] = card["ever_drawn_game_count"]
-        cardAlternate["# GD"] = card["drawn_game_count"]
-        cardAlternate["# GNS"] = card["never_drawn_game_count"]
-        cardAlternate["# OH"] = card["opening_hand_game_count"]
-        cardAlternate["OH WR"] = ""
-        cardAlternate["GIH WR"] = ""
-        cardAlternate["ATA"] = ""
-        cardAlternate["ALSA"] = ""
-        cardAlternate["IWD"] = ""
+        cardAlternate = {"Name": card["name"], "Color": card["color"],
+                         "Rarity": card["rarity"],
+                         "# GIH": card["ever_drawn_game_count"],
+                         "# GD": card["drawn_game_count"],
+                         "# GNS": card["never_drawn_game_count"],
+                         "# OH": card["opening_hand_game_count"],
+                         "url": card["url"],
+                         "OH WR": "",
+                         "GIH WR": "",
+                         "ATA": "",
+                         "ALSA": "",
+                         "IWD": ""}
 
         # round to 2 decimal points for ALSA and ATA
         # only account if stat exists
@@ -177,19 +176,32 @@ def processData(data):
     GIH_WRStats = {"μ": GIH_WRμ, "σ": GIH_WRσ}
     IWDStats = {"μ": IWDμ, "σ": IWDσ}
 
-    for cardName, card in cardData.items():
-        cardData[cardName]["zScoreGIH"] = 0
-        cardData[cardName]["zScoreOH"] = 0
-        cardData[cardName]["zScoreIWD"] = 0
-        if card["GIH WR"]:
-            cardData[cardName]["zScoreGIH"] = (float(card["GIH WR"][:-1]) - GIH_WRμ)/GIH_WRσ
-            cardData[cardName]["zScoreGIH"] = float(str(cardData[cardName]["zScoreGIH"])[:5])
-        if card["OH WR"]:
-            cardData[cardName]["zScoreOH"] = (float(card["OH WR"][:-1]) - OH_WRμ)/OH_WRσ
-            cardData[cardName]["zScoreOH"] = float(str(cardData[cardName]["zScoreOH"])[:5])
-        if card["IWD"]:
-            cardData[cardName]["zScoreIWD"] = (float(card["IWD"][:-2]) - IWDμ)/IWDσ
-            cardData[cardName]["zScoreIWD"] = float(str(cardData[cardName]["zScoreIWD"])[:5])
+    try:
+        for cardName, card in cardData.items():
+            cardData[cardName]["zScoreGIH"] = 0
+            cardData[cardName]["zScoreOH"] = 0
+            cardData[cardName]["zScoreIWD"] = 0
+            if card["GIH WR"]:
+                cardData[cardName]["zScoreGIH"] = (float(
+                    card["GIH WR"][:-1]) - GIH_WRμ) / GIH_WRσ
+                cardData[cardName]["zScoreGIH"] = float(
+                    str(cardData[cardName]["zScoreGIH"])[:5])
+            if card["OH WR"]:
+                cardData[cardName]["zScoreOH"] = (float(
+                    card["OH WR"][:-1]) - OH_WRμ) / OH_WRσ
+                cardData[cardName]["zScoreOH"] = float(
+                    str(cardData[cardName]["zScoreOH"])[:5])
+            if card["IWD"]:
+                cardData[cardName]["zScoreIWD"] = (float(
+                    card["IWD"][:-2]) - IWDμ) / IWDσ
+                cardData[cardName]["zScoreIWD"] = float(
+                    str(cardData[cardName]["zScoreIWD"])[:5])
+    except ZeroDivisionError:
+        print(f"{ANSI.red}[Error] There is some stat that no cards have data for. {ANSI.reset}")
+        for cardName, card in cardData.items():
+            cardData[cardName]["zScoreGIH"] = 0
+            cardData[cardName]["zScoreOH"] = 0
+            cardData[cardName]["zScoreIWD"] = 0
 
     result["cardData"] = cardData
     result["generalStats"] = {"OH WR": OH_WRStats,
@@ -197,6 +209,7 @@ def processData(data):
                               "IWD": IWDStats}
 
     return result
+
 
 # puts data into a master json
 def processDataToMaster(colorPair, data, originalMaster):
@@ -212,6 +225,7 @@ def processDataToMaster(colorPair, data, originalMaster):
         newMaster[cardName]["ALSA"] = cardData["ALSA"]
         newMaster[cardName]["name"] = cardName
         newMaster[cardName]["color"] = cardData["Color"]
+        newMaster[cardName]["rarity"] = cardData["Rarity"]
         newMaster[cardName][colorPair] = {
             "GIH WR": cardData["GIH WR"],
             "zScoreGIH": cardData["zScoreGIH"],
@@ -222,7 +236,8 @@ def processDataToMaster(colorPair, data, originalMaster):
             "# GIH": cardData["# GIH"],
             "# OH": cardData["# OH"],
             "# GNS": cardData["# GNS"],
-            "# GD": cardData["# GD"]
+            "# GD": cardData["# GD"],
+            "url": cardData["url"]
         }
 
     return newMaster
