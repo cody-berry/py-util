@@ -144,7 +144,7 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
 import requests
 
 # constructing the API request
-set_code = "woe"
+set_code = "lci"
 url = f"https://api.scryfall.com/cards/search?q=set:{set_code}"
 
 # sending the API request
@@ -474,7 +474,7 @@ while True:
             cardName = process.extractOne(cards[0], cardNames)[0]
             singleCard = True
             for colorPair in ['WU', 'UB', 'BR', 'RG', 'WG',
-                              'WR', 'UR', 'UG', 'BG', 'WB']:
+                              'WR', 'UR', 'UG', 'BG', 'WB', 'all']:
                 card = data[cardName][colorPair]
                 card["colorPair"] = colorPair
                 card["Name"] = cardName
