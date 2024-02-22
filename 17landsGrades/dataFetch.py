@@ -27,7 +27,7 @@ def fetchData(url):
         return data
     else:
         # if not, print that it failed to fetch data
-        print("Failed to fetch data. Error code", response.status_code)
+        print("Failed to fetch data. Error code: ", response.status_code)
         return None
 
 

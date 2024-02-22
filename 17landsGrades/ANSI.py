@@ -1,6 +1,4 @@
 reset = "\033[0m"
-bold = "\033[1m"
-faint = "\033[2m"
 italic = "\033[3m"
 underline = "\033[4m"
 strikethrough = "\033[9m"
@@ -29,29 +27,31 @@ resetBackground = "\033[49m"
 ivoryWhite = "\033[1;93m"
 pureWhite = "\033[1;97m"
 pureWhiteBackground = "\033[37;107m"
+if __name__ == "__main__":
+	print(f"{italic}Italic "
+		  f"{underline}Underline "
+		  f"{strikethrough}Strikethrough{reset} Reset")
+	print(f"Foreground: {black}B{reset}{red}R{reset}{orange}O{reset}"
+		  f"{yellow}Y{reset}{green}G{reset}{blue}U{reset}{indigo}I{reset}"
+		  f"{cyan}C{reset}{magenta}M{reset}{dimWhite}W{resetForeground} ResetForeground\n"
+		  f"{ivoryWhite}Ivory white{reset} "
+		  f"{pureWhite}Pure{reset}")
+	print(f"Background: "
+		  f"{blackBackground}B{reset}"
+		  f"{redBackground}R{reset}"
+		  f"{orangeBackground}O{reset}"
+		  f"{yellowBackground}Y{reset}"
+		  f"{greenBackground}G{reset}"
+		  f"{blueBackground}U{reset}"
+		  f"{indigoBackground}I{reset}"
+		  f"{cyanBackground}C{reset}"
+		  f"{magentaBackground}M{reset}"
+		  f"{whiteBackground}W{resetBackground} ResetBackground")
+	print(f"{pureWhiteBackground}Pure{reset}")
+	print(f"Mixing: "
+		  f"{red}{whiteBackground}RedForegroundWhiteBackground{reset} "
+		  f"{green}{blueBackground}GreenForegroundBlueBackground{reset}")
 
-# print(f"{bold}Bold{reset} "
-#       f"{faint}Faint{reset} "
-#       f"{italic}Italic{reset} "
-#       f"{underline}Underline{reset} "
-#       f"{strikethrough}Strikethrough{reset} Reset")
-# print(f"Foreground: {black}B{reset}{red}R{reset}{orange}O{reset}"
-#       f"{yellow}Y{reset}{green}G{reset}{blue}U{reset}{indigo}I{reset}"
-#       f"{cyan}C{reset}{magenta}M{reset}{dimWhite}W{resetForeground} ResetForeground\n"
-#       f"{ivoryWhite}Ivory white{reset} "
-#       f"{pureWhite}Pure{reset}")
-# print(f"Background: "
-#       f"{blackBackground}B{reset}"
-#       f"{redBackground}R{reset}"
-#       f"{orangeBackground}O{reset}"
-#       f"{yellowBackground}Y{reset}"
-#       f"{greenBackground}G{reset}"
-#       f"{blueBackground}U{reset}"
-#       f"{indigoBackground}I{reset}"
-#       f"{cyanBackground}C{reset}"
-#       f"{magentaBackground}M{reset}"
-#       f"{whiteBackground}W{resetBackground} ResetBackground")
-# print(f"{pureWhiteBackground}Pure{reset}")
-# print(f"Mixing: "
-#       f"{red}{whiteBackground}RedForegroundWhiteBackground{reset} "
-#       f"{green}{blueBackground}GreenForegroundBlueBackground{reset}")
+	print("Mana symbol demo: {X}{X}{X}{4}",
+		  blue + "{U}" + reset + red + "{R}" + reset + red + "{R" + reset + "/" + pureWhite + "W}" + reset +
+		  pureWhite + "}" + reset)

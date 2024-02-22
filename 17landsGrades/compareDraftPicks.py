@@ -284,53 +284,38 @@ with open("cardRatingsTop/lastUpdated.json", "r") as lastUpdated:
 
 # makes W ANSI.pureWhite, U ANSI.blue, B ANSI.dimWhite, R ANSI.red, and G ANSI.green.
 def applyANSIToManaCost(manaCost):
-    indicesToModify = []
-    index = 0
-    for char in manaCost:
-        if char == "W":
-            indicesToModify.append([index, "W"])
-        if char == "U":
-            indicesToModify.append([index, "U"])
-        if char == "B":
-            indicesToModify.append([index, "B"])
-        if char == "R":
-            indicesToModify.append([index, "R"])
-        if char == "G":
-            indicesToModify.append([index, "G"])
-        index += 1
+    # Demo:
+    # manaCost = {4}{U}{B}{G/W}
+    #
+    # splitManaCost = ["", 4}, U}, B}, G/W}]
+    # iterate through splitManaCost (call it manaSymbol):
+    # If it's "", skip
+    # Append { to the beginning
+    # ""
+    #   Skip
+    # 4}
+    #   Turns into {4}
+    #   Doesn't include W, U, B, R, or G
+    # U}
+    #   Turns into {U}
+    #   Includes U
+    #   Doesn't include /
+    #   Put Ansi.Blue at the start and Ansi.Reset at the end
+    # B}
+    #   Turns into {B}
+    #   Includes B
+    #   Doesn't include /
+    #   Put Ansi.DimWhite at the start and Ansi.Reset at the end
+    # G/W}
+    #   Turns into {G/W}
+    #   Includes W
+    #   Includes /
+    #   {G
+    #     Put Ansi.Green at the start and Ansi.Reset at the end
+    #   W}
+    #     Put Ansi.White at the start and Ansi.White at the end
 
-    newManaCost = manaCost
-    for i in range(len(indicesToModify) - 1, -1, -1):
-        element = indicesToModify[i]
-        letter = element[1]
-        index = element[0]
-        if letter == "W":
-            newManaCost = newManaCost[:index - 1] + f"{ANSI.pureWhite}" \
-                                                    "{W}" \
-                                                    f"{ANSI.reset}" \
-                          + newManaCost[index + 2:]
-        if letter == "U":
-            newManaCost = newManaCost[:index - 1] + f"{ANSI.blue}" \
-                                                    "{U}" \
-                                                    f"{ANSI.reset}" \
-                          + newManaCost[index + 2:]
-        if letter == "B":
-            newManaCost = newManaCost[:index - 1] + f"{ANSI.dimWhite}" \
-                                                    "{B}" \
-                                                    f"{ANSI.reset}" \
-                          + newManaCost[index + 2:]
-        if letter == "R":
-            newManaCost = newManaCost[:index - 1] + f"{ANSI.red}" \
-                                                    "{R}" \
-                                                    f"{ANSI.reset}" \
-                          + newManaCost[index + 2:]
-        if letter == "G":
-            newManaCost = newManaCost[:index - 1] + f"{ANSI.green}" \
-                                                    "{G}" \
-                                                    f"{ANSI.reset}" \
-                          + newManaCost[index + 2:]
-
-    return newManaCost
+    return manaCost
 
 
 # repeatedly remove everything in parens from a string
@@ -339,7 +324,8 @@ def removeReminderText(oracleText):
         while True:
             indexOfNextOpenParen = oracleText.index("(")
             indexOfNextCloseParen = oracleText.index(")")
-            oracleText = oracleText[:indexOfNextOpenParen] + oracleText[indexOfNextCloseParen + 1:]
+            oracleText = oracleText[:indexOfNextOpenParen] + oracleText[
+                                                             indexOfNextCloseParen + 1:]
     except ValueError:
         return oracleText
 
