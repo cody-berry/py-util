@@ -144,7 +144,7 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
 import requests
 
 # constructing the API request
-set_code = "lci"
+set_code = "mkm"
 url = f"https://api.scryfall.com/cards/search?q=set:{set_code}"
 
 # sending the API request
