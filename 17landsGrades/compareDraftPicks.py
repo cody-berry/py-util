@@ -288,11 +288,8 @@ def applyANSIToManaCost(manaCost):
     # manaCost = {4}{U}{B}{G/W}
     #
     # splitManaCost = ["", 4}, U}, B}, G/W}]
+    # splitManaCost = [4}, U}, B}, G/W}]
     # iterate through splitManaCost (call it manaSymbol):
-    # If it's "", skip
-    # Append { to the beginning
-    # ""
-    #   Skip
     # 4}
     #   Turns into {4}
     #   Doesn't include W, U, B, R, or G
@@ -313,9 +310,82 @@ def applyANSIToManaCost(manaCost):
     #   {G
     #     Put Ansi.Green at the start and Ansi.Reset at the end
     #   W}
-    #     Put Ansi.White at the start and Ansi.White at the end
+    #     Put Ansi.White at the start and Ansi.Reset at the end
 
-    return manaCost
+    splitManaCost = manaCost.split("{")
+
+    # since the mana always starts with a { or the mana cost is empty, splitManaCost will always start with ""
+    # we don't want that so we trim that
+    splitManaCost = splitManaCost[1:]
+
+    newManaCost = ""
+
+    for manaSymbol in splitManaCost:
+        # split() always removes what it's splitting, making it so that the mana symbol doesn't have a "{" in it
+        manaSymbol = "{" + manaSymbol
+
+        # now we check if manaSymbol contains W, U, B, R, or G (distinguish between colorless and colored)
+        if ("W" in manaSymbol) or \
+           ("U" in manaSymbol) or \
+           ("B" in manaSymbol) or \
+           ("R" in manaSymbol) or \
+           ("G" in manaSymbol):
+            # now we check if manaSymbol contains / (distinguish between single and multi)
+            if "/" in manaSymbol:
+                # manaSymbol is {(color1)/(color2)}
+                # we want it to be (ansi color 1){(color1)(reset)/(ansi color 2)(color2)}(reset)
+                ansiColorOne = ANSI.reset # pre-define ansiColorOne
+                # manaSymbol[1] is always the first color, manaSymbol[3] the second
+                if manaSymbol[1] == "W":
+                    ansiColorOne = ANSI.pureWhite
+                elif manaSymbol[1] == "U":
+                    ansiColorOne = ANSI.blue
+                elif manaSymbol[1] == "B":
+                    ansiColorOne = ANSI.dimWhite
+                elif manaSymbol[1] == "R":
+                    ansiColorOne = ANSI.red
+                elif manaSymbol[1] == "G":
+                    ansiColorOne = ANSI.green
+
+                # now we do the same, except for ansiColorTwo and manaSymbol[3]
+                ansiColorTwo = ANSI.reset # pre-define ansiColorTwo
+                if manaSymbol[3] == "W":
+                    ansiColorTwo = ANSI.pureWhite
+                elif manaSymbol[3] == "U":
+                    ansiColorTwo = ANSI.blue
+                elif manaSymbol[3] == "B":
+                    ansiColorTwo = ANSI.dimWhite
+                elif manaSymbol[3] == "R":
+                    ansiColorTwo = ANSI.red
+                elif manaSymbol[3] == "G":
+                    ansiColorTwo = ANSI.green
+
+                newManaCost += ansiColorOne + "{" + manaSymbol[1] + ANSI.reset + "/" + \
+                    ansiColorTwo + manaSymbol[3] + "}" + ANSI.reset
+            else:
+                # single-colored.
+                # manaSymbol[1] is what we're looking for; it's the color.
+                ansiColor = ANSI.reset
+                if manaSymbol[1] == "W":
+                    ansiColor = ANSI.pureWhite
+                elif manaSymbol[1] == "U":
+                    ansiColor = ANSI.blue
+                elif manaSymbol[1] == "B":
+                    ansiColor = ANSI.dimWhite
+                elif manaSymbol[1] == "R":
+                    ansiColor = ANSI.red
+                elif manaSymbol[1] == "G":
+                    ansiColor = ANSI.green
+
+                newManaCost += ansiColor + manaSymbol + ANSI.reset
+        else:
+            # colorless. we don't need to do anything.
+            newManaCost += manaSymbol
+
+
+
+
+    return newManaCost
 
 
 # repeatedly remove everything in parens from a string
