@@ -653,8 +653,13 @@ while True:
     # if we're supposed to show oracle text, do it!
     if showOracleText:
         # show all relevant information
-        try:  # this could be a double-faced card. if it is, then
+        try:  # this could be a double-faced card. if it is, then an error will be raised
             scryfallCardData = scryfallDict[cardName]
+
+            # an error will be raised if this is a double-faced card
+            test = removeReminderText(scryfallCardData["oracle_text"])
+
+
             print(f"\n{cardName} "
                   f"{applyANSIToManaCost(scryfallCardData['mana_cost'])}")
             print(scryfallCardData["type_line"])
