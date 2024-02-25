@@ -52,6 +52,6 @@ if __name__ == "__main__":
 		  f"{red}{whiteBackground}RedForegroundWhiteBackground{reset} "
 		  f"{green}{blueBackground}GreenForegroundBlueBackground{reset}")
 
-	print("Mana symbol demo: {X}{X}{X}{4}",
+	print("Mana symbol demo: {X}{X}{X}{4}" +
 		  blue + "{U}" + reset + red + "{R}" + reset + red + "{R" + reset + "/" + pureWhite + "W}" + reset +
-		  pureWhite + "}" + reset)
+		  pureWhite + "{W}" + reset)

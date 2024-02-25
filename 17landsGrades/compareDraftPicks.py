@@ -177,9 +177,18 @@ else:
     raise FileNotFoundError(
         f"Could not load scryfall data for {set_code}. Error code: {response.status_code}")
 
-# constructing the API request
-set_code = "wot"
-url = f"https://api.scryfall.com/cards/search?q=set:{set_code}"
+# constructing the API request for the list cards
+url = (f"https://api.scryfall.com/cards/search?q=e%3Aplst+%28%28%28cn%E2%89%A5+cn%E2%89%A4%29+OR+cn%3A%22APC-117%22+OR+"
+       f"cn%3A%22MH1-21%22+OR+cn%3A%22DIS-33%22+OR+cn%3A%22XLN-91%22+OR+cn%3A%22C16-47%22+OR+cn%3A%22SOM-96%22+OR+"
+       f"cn%3A%22STX-64%22+OR+cn%3A%22MH2-191%22+OR+cn%3A%22ISD-183%22+OR+cn%3A%22DKA-143%22+OR+cn%3A%22DST-40%22+OR+"
+       f"cn%3A%22MRD-99%22+OR+cn%3A%22ELD-107%22+OR+cn%3A%22DKA-4%22+OR+cn%3A%22M20-167%22+OR+cn%3A%22RTR-140%22+OR+"
+       f"cn%3A%22ONS-89%22+OR+cn%3A%22WAR-54%22+OR+cn%3A%22DOM-130%22+OR+cn%3A%22HOU-149%22+OR+cn%3A%22MBS-10%22+OR+"
+       f"cn%3A%22RAV-277%22+OR+cn%3A%222X2-17%22+OR+cn%3A%22STX-220%22+OR+cn%3A%22M14-213%22+OR+cn%3A%22KLD-221%22+OR+"
+       f"cn%3A%22ARB-68%22+OR+cn%3A%22JOU-153%22+OR+cn%3A%22RNA-182%22+OR+cn%3A%22C21-19%22+OR+cn%3A%22UMA-138%22+OR+"
+       f"cn%3A%22MH2-46%22+OR+cn%3A%22VOW-207%22+OR+cn%3A%22ONS-272%22+OR+cn%3A%22UMA-247%22+OR+cn%3A%22SOM-98%22+OR+"
+       f"cn%3A%22DDU-50%22+OR+cn%3A%22CLB-85%22+OR+cn%3A%22DIS-173%22+OR+cn%3A%22SOI-262%22%29%29&unique=prints")
+
+print(url)
 
 # sending the API request
 response = requests.get(url)
