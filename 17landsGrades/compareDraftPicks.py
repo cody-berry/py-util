@@ -188,7 +188,38 @@ url = (f"https://api.scryfall.com/cards/search?q=e%3Aplst+%28%28%28cn%E2%89%A5+c
        f"cn%3A%22MH2-46%22+OR+cn%3A%22VOW-207%22+OR+cn%3A%22ONS-272%22+OR+cn%3A%22UMA-247%22+OR+cn%3A%22SOM-98%22+OR+"
        f"cn%3A%22DDU-50%22+OR+cn%3A%22CLB-85%22+OR+cn%3A%22DIS-173%22+OR+cn%3A%22SOI-262%22%29%29&unique=prints")
 
-print(url)
+# sending the API request
+response = requests.get(url)
+
+# processing the API response
+if response.status_code == 200:
+    data = response.json()
+    # extracting relevant information from the response
+    cards = data['data']
+
+    # saving the data
+    # using pagination to retrieve all the cards
+    while data["has_more"]:
+        next_page_url = data["next_page"]
+        response = requests.get(next_page_url)
+        if (response.status_code == 200):
+            data = response.json()
+            cards.extend(data['data'])
+        else:
+            raise FileNotFoundError(
+                f"Could not load next page. Error code: {response.status_code}")
+
+    # transform the json list into a json dict
+    scryfallDict = {**scryfallDict, **{card["name"]: card for card in cards}}
+    print("Data saved successfully.")
+else:
+    raise FileNotFoundError(
+        f"Could not load scryfall data for {set_code}. Error code: {response.status_code}")
+
+# same for special guest cards
+url = (f'https://api.scryfall.com/cards/search?q=!"Crashing+Footfalls"+OR+!"Drown+in+the+Loch"+OR+!"Fabricate"+OR+'
+       f'!"Field+of+the+Dead"+OR+!Gamble+OR+!"Ghostly+Prison"+OR+!"Show+and+Tell"+OR+!"Tireless+Tracker"+OR+'
+       f'!"Tragic+Slip"+OR+!Victimize&order=set&as=grid&unique=cards')
 
 # sending the API request
 response = requests.get(url)
