@@ -101,6 +101,23 @@ def normalProbabilityDensity(i):
     coefficient = 1.0/np.sqrt(2*np.pi)
     return coefficient * np.exp((-i**2) / 2)
 
+# p is the probability of success. this function returns the probability that
+# you find your first success exactly n.
+def nonCumulativeGeometricProbability(p, n):
+    return ((1-p)**(n-1))*p
+
+# same as nonCumulativeGeometricProbability, except it's first success n or less.
+def cumulativeGeometricProbability(p, n, reverse):
+    totalProbability = 0
+    for i in range(1, int(n + 1)):
+        totalProbability += nonCumulativeGeometricProbability(p, i)
+
+    # reverse for more than n if needed
+    if reverse == "y":
+        totalProbability = 1 - totalProbability
+
+    return totalProbability
+
 while True:
     # choose between modes
     print("Choose between these modes:")
@@ -111,9 +128,11 @@ while True:
     print("5. Calculate the hypergeometric probability based on all the hypergeometric arguments")
     print("6. Calculate the standard deviation of a table based on its mean and its elements' values and probabilities. ")
     print("7. Shift and scale a mean and standard deviation")
+    print("8. Calculate the geometric probability (exactly n)")
+    print("9. Calculate the geometric probability (n or less)")
     try:
         mode = int(input("Please choose a mode. "))
-        assert mode in [1, 2, 3, 4, 5, 6, 7]
+        assert mode in [1, 2, 3, 4, 5, 6, 7, 8, 9]
         if mode == 1:
             lowerBound = float(input('lower integration bound:'))
             upperBound = float(input('upper integration bound:'))
@@ -189,5 +208,16 @@ while True:
                 float(input("Shift of new distribution: ")),
                 float(input("Scale of new distribution: "))
             ))
+        if mode == 8:
+            print(nonCumulativeGeometricProbability(
+                float(input("Probability of success:")),
+                float(input("Exact number of attempts:"))
+            ))
+        if mode == 9:
+            print(cumulativeGeometricProbability(
+                float(input("Probability of success:")),
+                float(input("Maximum number of attempts:")),
+                input("Reverse (y/n):")
+            ))
     except:
-        print("The mode chosen is invalid. You must choose a mode from 1 to 6. \n")
+        print("The mode chosen is invalid. You must choose a mode from 1 to 9. \n")
