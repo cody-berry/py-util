@@ -22,7 +22,7 @@ setName = "lci"
 import requests
 for urlData in imageURLs:
     url = urlData[1]
-    fileToSaveIn = f"./cardImages/lci/{urlData[0]}.jpg"
+    fileToSaveIn = f"./cardImages/otj/{urlData[0]}.jpg"
 
     response = requests.get(url)
 
