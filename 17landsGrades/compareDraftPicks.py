@@ -142,112 +142,43 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
 
 # import the set data
 import requests
-
-# constructing the API request
-set_code = "mkm"
-url = f"https://api.scryfall.com/cards/search?q=set:{set_code}"
-
-# sending the API request
-response = requests.get(url)
-
 scryfallDict = {}
 
-# processing the API response
-if response.status_code == 200:
-    data = response.json()
-    # extracting relevant information from the response
-    cards = data['data']
+# constructing the API request
+for set_code in ["otj", "otp", "big",
+                 "spg+cn≥29+cn≤38"]: # we want to cover only the OTJ SPG cards.
+    url = f"https://api.scryfall.com/cards/search?q=e:{set_code}"
+    print("Loading " + url + "...")
 
-    # saving the data
-    # using pagination to retrieve all the cards
-    while data["has_more"]:
-        next_page_url = data["next_page"]
-        response = requests.get(next_page_url)
-        if (response.status_code == 200):
-            data = response.json()
-            cards.extend(data['data'])
-        else:
-            raise FileNotFoundError(
-                f"Could not load next page. Error code: {response.status_code}")
+    # sending the API request
+    response = requests.get(url)
 
-    # transform the json list into a json dict
-    scryfallDict = {card["name"]: card for card in cards}
-    print("Data saved successfully.")
-else:
-    raise FileNotFoundError(
-        f"Could not load scryfall data for {set_code}. Error code: {response.status_code}")
+    # processing the API response
+    if response.status_code == 200:
+        data = response.json()
+        # extracting relevant information from the response
+        cards = data['data']
 
-# constructing the API request for the list cards
-url = (f"https://api.scryfall.com/cards/search?q=e%3Aplst+%28%28%28cn%E2%89%A5+cn%E2%89%A4%29+OR+cn%3A%22APC-117%22+OR+"
-       f"cn%3A%22MH1-21%22+OR+cn%3A%22DIS-33%22+OR+cn%3A%22XLN-91%22+OR+cn%3A%22C16-47%22+OR+cn%3A%22SOM-96%22+OR+"
-       f"cn%3A%22STX-64%22+OR+cn%3A%22MH2-191%22+OR+cn%3A%22ISD-183%22+OR+cn%3A%22DKA-143%22+OR+cn%3A%22DST-40%22+OR+"
-       f"cn%3A%22MRD-99%22+OR+cn%3A%22ELD-107%22+OR+cn%3A%22DKA-4%22+OR+cn%3A%22M20-167%22+OR+cn%3A%22RTR-140%22+OR+"
-       f"cn%3A%22ONS-89%22+OR+cn%3A%22WAR-54%22+OR+cn%3A%22DOM-130%22+OR+cn%3A%22HOU-149%22+OR+cn%3A%22MBS-10%22+OR+"
-       f"cn%3A%22RAV-277%22+OR+cn%3A%222X2-17%22+OR+cn%3A%22STX-220%22+OR+cn%3A%22M14-213%22+OR+cn%3A%22KLD-221%22+OR+"
-       f"cn%3A%22ARB-68%22+OR+cn%3A%22JOU-153%22+OR+cn%3A%22RNA-182%22+OR+cn%3A%22C21-19%22+OR+cn%3A%22UMA-138%22+OR+"
-       f"cn%3A%22MH2-46%22+OR+cn%3A%22VOW-207%22+OR+cn%3A%22ONS-272%22+OR+cn%3A%22UMA-247%22+OR+cn%3A%22SOM-98%22+OR+"
-       f"cn%3A%22DDU-50%22+OR+cn%3A%22CLB-85%22+OR+cn%3A%22DIS-173%22+OR+cn%3A%22SOI-262%22%29%29&unique=prints")
+        # saving the data
+        # using pagination to retrieve all the cards
+        while data["has_more"]:
+            next_page_url = data["next_page"]
+            response = requests.get(next_page_url)
+            if (response.status_code == 200):
+                data = response.json()
+                cards.extend(data['data'])
+            else:
+                raise FileNotFoundError(
+                    f"Could not load next page. Error code: {response.status_code}")
 
-# sending the API request
-response = requests.get(url)
+        # transform the json list into a json dict
+        scryfallDict = {**scryfallDict, **{card["name"]: card for card in cards}}
+        print("Data saved successfully.")
+    else:
+        raise FileNotFoundError(
+            f"Could not load scryfall data for {set_code}. Error code: {response.status_code}")
 
-# processing the API response
-if response.status_code == 200:
-    data = response.json()
-    # extracting relevant information from the response
-    cards = data['data']
 
-    # saving the data
-    # using pagination to retrieve all the cards
-    while data["has_more"]:
-        next_page_url = data["next_page"]
-        response = requests.get(next_page_url)
-        if (response.status_code == 200):
-            data = response.json()
-            cards.extend(data['data'])
-        else:
-            raise FileNotFoundError(
-                f"Could not load next page. Error code: {response.status_code}")
-
-    # transform the json list into a json dict
-    scryfallDict = {**scryfallDict, **{card["name"]: card for card in cards}}
-    print("Data saved successfully.")
-else:
-    raise FileNotFoundError(
-        f"Could not load scryfall data for {set_code}. Error code: {response.status_code}")
-
-# same for special guest cards
-url = (f'https://api.scryfall.com/cards/search?q=!"Crashing+Footfalls"+OR+!"Drown+in+the+Loch"+OR+!"Fabricate"+OR+'
-       f'!"Field+of+the+Dead"+OR+!Gamble+OR+!"Ghostly+Prison"+OR+!"Show+and+Tell"+OR+!"Tireless+Tracker"+OR+'
-       f'!"Tragic+Slip"+OR+!Victimize&order=set&as=grid&unique=cards')
-
-# sending the API request
-response = requests.get(url)
-
-# processing the API response
-if response.status_code == 200:
-    data = response.json()
-    # extracting relevant information from the response
-    cards = data['data']
-
-    # saving the data
-    # using pagination to retrieve all the cards
-    while data["has_more"]:
-        next_page_url = data["next_page"]
-        response = requests.get(next_page_url)
-        if (response.status_code == 200):
-            data = response.json()
-            cards.extend(data['data'])
-        else:
-            raise FileNotFoundError(
-                f"Could not load next page. Error code: {response.status_code}")
-
-    # transform the json list into a json dict
-    scryfallDict = {**scryfallDict, **{card["name"]: card for card in cards}}
-    print("Data saved successfully.")
-else:
-    raise FileNotFoundError(
-        f"Could not load scryfall data for {set_code}. Error code: {response.status_code}")
 
 # import fuzzywuzzy
 from fuzzywuzzy import process
@@ -524,8 +455,7 @@ while True:
     if len(cards) == 1:
         if currentCardString == "instruction":
             print("Instruction manual:")
-            print(
-                "⚠ Please forgive any typos, as this was made in half a month or so. ⚠")
+            print("⚠ Please forgive any typos, as this was made in half a month or so. ⚠")
             print("At the top of the print line, you will see the ratings of "
                   + "all cards, formatted as the last part says.")
             print("Type a number of cards. You can use abbreviations and you "
@@ -534,7 +464,7 @@ while True:
                   + "part of another card.")
             print("Card names are split with ';'. ")
             print("Spaces don't matter. ")
-            print("Don't use ';' as an ender.")
+            print("Don't use ';' as an ender or starter, or accidentally in the middle of a card name.")
             print("Card data is in the format of:")
             print("{grade for GIH WR} {zScore for GIH WR} {GIH WR} {repeat for "
                   + "OH WR and IWD} {card name}")
@@ -712,6 +642,7 @@ while True:
             # this is a double-faced card
             cardMatch, temp = process.extractOne(cardName, scryfallDict.keys())
             scryfallCardData = scryfallDict[cardMatch]
+            print(cardMatch)
 
             for cardFace in scryfallDict[cardMatch]['card_faces']:
                 print(
