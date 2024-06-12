@@ -18,11 +18,11 @@ with open("./cardRatingsAll/all.json") as allDataWrapper:
         imageURLs.append([card[0], card[1]["url"]])
 
 
-setName = "lci"
+setName = "mh3"
 import requests
 for urlData in imageURLs:
     url = urlData[1]
-    fileToSaveIn = f"./cardImages/otj/{urlData[0]}.jpg"
+    fileToSaveIn = f"./cardImages/mh3/{urlData[0]}.jpg"
 
     response = requests.get(url)
 

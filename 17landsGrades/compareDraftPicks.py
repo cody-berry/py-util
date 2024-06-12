@@ -145,8 +145,8 @@ import requests
 scryfallDict = {}
 
 # constructing the API request
-for set_code in ["otj", "otp", "big",
-                 "spg+cn≥29+cn≤38"]: # we want to cover only the OTJ SPG cards.
+for set_code in ["mh3",
+                 "spg+cn≥39+cn≤53"]: # we want to cover only the OTJ SPG cards.
     url = f"https://api.scryfall.com/cards/search?q=e:{set_code}"
     print("Loading " + url + "...")
 
