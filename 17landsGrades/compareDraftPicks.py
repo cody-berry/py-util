@@ -635,6 +635,10 @@ while True:
                   f"{applyANSIToManaCost(scryfallCardData['mana_cost'])}")
             print(scryfallCardData["type_line"])
             print(removeReminderText(scryfallCardData["oracle_text"]))
+            try:
+                print(scryfallCardData["power"] + "/" + scryfallCardData["toughness"])
+            except:
+                pass
             print((f"{ANSI.dimWhite}"
                    f"{scryfallCardData['flavor_text']}"
                    f"{ANSI.reset}") if "flavor_text" in scryfallCardData else "")
@@ -650,6 +654,10 @@ while True:
                     f"\n{cardFace['name']} {applyANSIToManaCost(cardFace['mana_cost'])}")
                 print(cardFace["type_line"])
                 print(removeReminderText(cardFace["oracle_text"]))
+            try:
+                print(scryfallCardData["power"] + "/" + scryfallCardData["toughness"])
+            except:
+                pass
                 print((f"{ANSI.dimWhite}"
                        f"{cardFace['flavor_text']}"
                        f"{ANSI.reset}") if "flavor_text" in cardFace else "")

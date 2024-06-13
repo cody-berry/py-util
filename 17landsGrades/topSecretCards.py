@@ -3,10 +3,10 @@ import json
 # define the amount of diff between the top zScore and the all zScore
 # to make it a secret top card.
 minDiff = 0
-while minDiff < 1 or minDiff > 2:
+while minDiff < 0.25 or minDiff > 3:
     try:
         minDiff = float(input(
-            "Enter the minimum diff between the top z-score and the all z-score, between 1 and 2 (inclusive)."))
+            "Enter the minimum diff between the top z-score and the all z-score, between 0.25 and 3 (inclusive)."))
     except:
         print("Please enter an integer. ")
         pass
