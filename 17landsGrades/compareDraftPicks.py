@@ -654,10 +654,10 @@ while True:
                     f"\n{cardFace['name']} {applyANSIToManaCost(cardFace['mana_cost'])}")
                 print(cardFace["type_line"])
                 print(removeReminderText(cardFace["oracle_text"]))
-            try:
-                print(scryfallCardData["power"] + "/" + scryfallCardData["toughness"])
-            except:
-                pass
+                try:
+                    print(cardFace["power"] + "/" + cardFace["toughness"])
+                except:
+                    pass
                 print((f"{ANSI.dimWhite}"
                        f"{cardFace['flavor_text']}"
                        f"{ANSI.reset}") if "flavor_text" in cardFace else "")
