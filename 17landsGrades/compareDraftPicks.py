@@ -639,6 +639,10 @@ while True:
                 print(scryfallCardData["power"] + "/" + scryfallCardData["toughness"])
             except:
                 pass
+            try:
+                print("Loyalty: " + scryfallCardData["loyalty"])
+            except:
+                pass
             print((f"{ANSI.dimWhite}"
                    f"{scryfallCardData['flavor_text']}"
                    f"{ANSI.reset}") if "flavor_text" in scryfallCardData else "")
@@ -656,6 +660,10 @@ while True:
                 print(removeReminderText(cardFace["oracle_text"]))
                 try:
                     print(cardFace["power"] + "/" + cardFace["toughness"])
+                except:
+                    pass
+                try:
+                    print("Loyalty: " + cardFace["loyalty"])
                 except:
                     pass
                 print((f"{ANSI.dimWhite}"
