@@ -32,7 +32,7 @@ def fetchData(url):
 
 
 # the url that handles the expansion for the current set
-baseURL = (f'https://www.17lands.com/card_ratings/data?expansion=MH3'
+baseURL = (f'https://www.17lands.com/card_ratings/data?expansion=BLB'
            '&format=PremierDraft')
 baseURLBonusSheet = (f'https://www.17lands.com/card_ratings/data?expansion=WOT'
                      f'&format=PremierDraft')
@@ -208,9 +208,6 @@ def processData(data):
                               "IWD": IWDStats}
 
     return result
-
-
-master = {}
 
 
 # puts data into a master json

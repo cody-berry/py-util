@@ -18,14 +18,18 @@ with open("./cardRatingsAll/all.json") as allDataWrapper:
         imageURLs.append([card[0], card[1]["url"]])
 
 
-setName = "mh3"
+setName = "blb"
 import requests
+print("Loading", len(imageURLs), "images. Estimated time:", str(len(imageURLs)*0.5) + "s.")
+print("|", end="")
 for urlData in imageURLs:
     url = urlData[1]
-    fileToSaveIn = f"./cardImages/mh3/{urlData[0]}.jpg"
+    fileToSaveIn = f"./cardImages/blb/{urlData[0]}.jpg"
 
     response = requests.get(url)
 
     if response.status_code == 200:
         with open(fileToSaveIn, "wb") as file:
             file.write(response.content)
+            print("❙", end="")
+print("|")

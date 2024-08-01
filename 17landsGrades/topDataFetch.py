@@ -32,12 +32,11 @@ def fetchData(url):
 
 
 # the url that handles the expansion for the current set
-baseURL = (f'https://www.17lands.com/card_ratings/data?expansion=MH3'
+baseURL = (f'https://www.17lands.com/card_ratings/data?expansion=BLB'
            '&format=PremierDraft&user_group=top')
 baseURLBonusSheet = (f'https://www.17lands.com/card_ratings/data?expansion=WOT'
                      f'&format=PremierDraft&user_group=top')
 bonusSheetToggle = False
-print(baseURL)
 
 
 # transforms data like: {
