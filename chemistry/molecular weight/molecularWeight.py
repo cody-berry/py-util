@@ -8,7 +8,6 @@ import json
 with open('../chemicalData.json') as data:
 	print(data)
 	chemicalData = json.load(data)
-print(chemicalData)
 
 
 def findMolecularWeight(moleculeString):
@@ -59,17 +58,34 @@ def findMolecularWeight(moleculeString):
 						if elementData["symbol"] == currentChemicalSymbol:
 							elementDataForCurrentChemicalSymbol = elementData
 
-					resultingAtomicWeight += (
-							elementDataForCurrentChemicalSymbol[
-								"atomic_mass"] * (
-								1 if currentNumber == "" else int(
-									currentNumber)))
+					if not isInParen:
+						resultingAtomicWeight += (
+								elementDataForCurrentChemicalSymbol[
+									"atomic_mass"] * (
+									1 if currentNumber == "" else int(
+										currentNumber)))
+					else:
+						currentAtomicWeightInParens += (
+								elementDataForCurrentChemicalSymbol[
+									"atomic_mass"] * (
+									1 if currentNumber == "" else int(
+										currentNumber)))
 
 					print(
 						elementDataForCurrentChemicalSymbol["atomic_mass"] * (
 							1 if currentNumber == "" else int(currentNumber)))
 
 					currentChemicalSymbol = ""
+					currentNumber = ""
+				# if the current chemical symbol is empty, we might have just
+				# exitted a paren, in which case currentAtomicWeightInParens
+				# isn't 0.
+				elif currentAtomicWeightInParens > 0:
+					resultingAtomicWeight += (
+							 currentAtomicWeightInParens * (
+								1 if currentNumber == "" else int(
+									currentNumber)))
+					currentAtomicWeightInParens = 0
 					currentNumber = ""
 
 				# regardless, at the end, we always append the letter to the
@@ -126,9 +142,26 @@ def findMolecularWeight(moleculeString):
 						print("🍇")
 					else:
 						raise Exception("Nested parens are not allowed.")
-				if wentThrough & (char == ")"):
+				elif wentThrough & (char == ")"):
 					if len(currentChemicalSymbol) > 0:
 						print("🍓 🍓 🍓" + currentChemicalSymbol + currentNumber)
+
+						# find the element's data by iterating through each element
+						# in chemicalData and searching
+						for elementData in chemicalData["elements"]:
+							if elementData["symbol"] == currentChemicalSymbol:
+								elementDataForCurrentChemicalSymbol = elementData
+
+						currentAtomicWeightInParens += (
+								elementDataForCurrentChemicalSymbol[
+									"atomic_mass"] * (
+									1 if currentNumber == "" else int(
+										currentNumber)))
+						print(
+							elementDataForCurrentChemicalSymbol[
+								"atomic_mass"] * (
+								1 if currentNumber == "" else int(
+									currentNumber)))
 						currentChemicalSymbol = ""
 						currentNumber = ""
 					if isInParen:
@@ -136,27 +169,56 @@ def findMolecularWeight(moleculeString):
 						print("🫒")
 					else:
 						raise Exception("Extra right paren detected.")
+				else:
+					raise Exception(f"Unexpected character {char} detected.")
 
 	if isInParen:
 		raise Exception("Unclosed paren.")
 
-	if (currentChemicalSymbol != ""):
-		# we check again afterward
+	# if it's an uppercase character, we want to check whether the
+	# current chemical symbol is empty. if it is, we don't need to
+	# do anything; if it isn't, we'll need to compile what is
+	# inside currentChemicalSymbol and currentNumber.
+	if len(currentChemicalSymbol) > 0:
 		print("🍓 🍓 🍓" + currentChemicalSymbol + currentNumber)
 
+		# find the element's data by iterating through each element
+		# in chemicalData and searching
 		for elementData in chemicalData["elements"]:
 			if elementData["symbol"] == currentChemicalSymbol:
 				elementDataForCurrentChemicalSymbol = elementData
 
-		resultingAtomicWeight += (
-				elementDataForCurrentChemicalSymbol["atomic_mass"] * (
-					1 if currentNumber == "" else int(currentNumber)))
+		if isInParen == False:
+			resultingAtomicWeight += (
+					elementDataForCurrentChemicalSymbol[
+						"atomic_mass"] * (
+						1 if currentNumber == "" else int(
+							currentNumber)))
+		else:
+			currentAtomicWeightInParens += (
+					elementDataForCurrentChemicalSymbol[
+						"atomic_mass"] * (
+						1 if currentNumber == "" else int(
+							currentNumber)))
 
 		print(
 			elementDataForCurrentChemicalSymbol["atomic_mass"] * (
 				1 if currentNumber == "" else int(currentNumber)))
+	# if the current chemical symbol is empty, we might have just
+	# exitted a paren, in which case currentAtomicWeightInParens
+	# isn't 0.
+	elif currentAtomicWeightInParens > 0:
+		resultingAtomicWeight += (
+				currentAtomicWeightInParens * (
+			1 if currentNumber == "" else int(
+				currentNumber)))
+		print(
+				currentAtomicWeightInParens * (
+			1 if currentNumber == "" else int(
+				currentNumber)))
 
 	return resultingAtomicWeight
 
 
-print(findMolecularWeight("Ne"))
+while True:
+	print("🥳 " + findMolecularWeight(input("Enter a valid molecule: ")))
