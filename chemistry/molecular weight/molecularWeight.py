@@ -221,4 +221,11 @@ def findMolecularWeight(moleculeString):
 
 
 while True:
-	print("🥳 " + findMolecularWeight(input("Enter a valid molecule: ")))
+	print("🥳 " + str(findMolecularWeight(input("Enter a valid molecule: "))))
+
+
+
+
+
+
+
