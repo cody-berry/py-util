@@ -4,10 +4,11 @@ import random
 
 # the below prints possible possibilities.
 
+
 # example: "in lines exploding. supports bait...far."
 # other example "out lines exploding. DPS bait...near."
 def BewitchingFlight():
-	print("\033[33mBewitching Flight\033[0m")
+	print("\033[35mBewitching Flight\033[0m")
 	linesExplodingFirst = random.choice(["in", "out"]) + " lines exploding. "
 	DPSOrSupportsTargetedWithJump = random.choice(["DPS", "supports"]) + " bait"
 	bait = random.choice(["near", "far"])
@@ -17,6 +18,7 @@ def BewitchingFlight():
 	print(DPSOrSupportsTargetedWithJump, end="")
 	print("...", end="")
 	print(bait)
+
 
 # this will print something like:
 # Tanks in, so the easy pattern.
@@ -50,7 +52,7 @@ def NarrowingWideningWitchHunt():
 		 "Melees on waymark.", "Ranged on waymark."]):
 		baits = "♦——🔷——♦ ♦🔶♦ ♦——🔷——♦ ♦🔶♦"
 
-	print("\033[33m" + cast + " Witch Hunt\033[0m")
+	print("\033[35m" + cast + " Witch Hunt\033[0m")
 	print("Baits " + baits)
 
 	for callout in callouts:
@@ -59,7 +61,7 @@ def NarrowingWideningWitchHunt():
 
 # example: Spreads at 2.
 def EE1():
-	print("\033[33mEE1\033[0m")
+	print("\033[35mEE1\033[0m")
 
 	safeQuadrant = random.randint(1, 4)
 	spreadsOrStack = random.choice(["spreads", "stacks"])
@@ -68,17 +70,131 @@ def EE1():
 	print(safeQuadrant)
 
 
+# example:
+# you have short 3.
+# spreads at left part.
+def EE2():
+	print("\033[35mEE2\033[0m")
+
+	debuffTimer = random.choice(["short", "long"])
+	numTimesYouGotHit = random.randint(2, 3)
+	print("Debuff status:", end=" ")
+	print(debuffTimer, end=" ")
+	print(numTimesYouGotHit)
+
+
+	spreadsOrStack = random.choice(["spreads", "stacks"])
+	safeSide = random.choice(["left", "right"])
+	print(spreadsOrStack, end=" ")
+	print("on the", end=" ")
+	print(safeSide, end=" ")
+	print("side.")
+
+
+# example:
+# 1st: you have....donut debuff!
+# 2nd: you have....circle debuff!
+# 3rd: you have....far baiting debuff!
+# another example:
+# 1st: you have....near baiting debuff!
+# 2nd: you have....need-to-get-hit debuff!
+# 3rd: you have....far baiting debuff!
+def IonCluster():
+	print("\033[33mIon \033[34mCluster\033[0m")
+	debuff = random.choice(["\033[34mcircle\033[0m", "\033[38;2;8;73;158mdonut\033[0m",
+							"\033[36mnear baiting\033[0m", "\033[32mfar baiting\033[0m",
+							"\033[35mneed-to-get-hit\033[0m"])
+	print("1st:", debuff, "debuff")
+	debuff = random.choice(["\033[34mcircle\033[0m", "\033[38;2;8;73;158mdonut\033[0m",
+							"\033[36mnear baiting\033[0m", "\033[32mfar baiting\033[0m",
+							"\033[35mneed-to-get-hit\033[0m"])
+	print("2nd:", debuff, "debuff")
+	debuff = random.choice(["\033[34mcircle\033[0m", "\033[38;2;8;73;158mdonut\033[0m",
+							"\033[36mnear baiting\033[0m", "\033[32mfar baiting\033[0m",
+							"\033[35mneed-to-get-hit\033[0m"])
+	print("3rd:", debuff, "debuff")
+
+
+# example:
+# ←↑↑←   — a random row is selected to have 2 lefts
+# →↓↓←   — there will be 1-3 downs and the opposite number of ups.
+# →↑↑→   — another random row is selected to have 2 rights
+# →↑↑←   — all others are opposite, facing inwards (just like with row 2)
+def Exaflares():
+	print("\033[35mExaflares\033[0m")
+
+	# for the sake of having the grid, we'll select 1-3 unique rows to have down.
+	# others have ups.
+	numDownArrows = random.randint(1, 3)
+	numUpArrows = 4 - numDownArrows
+	downArrowRows = []
+	upArrowRows = []
+	for i in range(4):
+		if len(downArrowRows) >= numDownArrows:
+			upArrowRows.append(i + 1) # we use row 1-4, not rows 0-3
+		elif len(upArrowRows) >= numUpArrows:
+			downArrowRows.append(i + 1) # we use row 1-4, not rows 0-3
+		else:
+			arrowDirection = random.choice(["up", "down"])
+			if arrowDirection == "up":
+				upArrowRows.append(i + 1)
+			if arrowDirection == "down":
+				downArrowRows.append(i + 1)
+
+	# then, we select which row on the left faces outside. then we do the same
+	# for the right. they will never be on the same row, so we do the right until
+	# they are unequal
+	availableRows = [1, 2, 3, 4]
+	leftRowFacingOutward = random.choice(availableRows)
+	rightRowFacingOutward = leftRowFacingOutward
+	while leftRowFacingOutward == rightRowFacingOutward:
+		rightRowFacingOutward = random.choice(availableRows)
+
+	# now we know what the arrows are
+	for row in availableRows:
+		# first: the left arrow
+		# always faces right unless specified
+		if row == leftRowFacingOutward:
+			print("←", end="")
+		else:
+			print("→", end="")
+
+		# then we display the middle arrows (arrows on middle column)
+		# if it's part of the downArrowRows, we display ↓↓; otherwise it's ↑↑
+		if downArrowRows.__contains__(row):
+			print("↓↓", end="")
+		else:
+			print("↑↑", end="")
+
+		# after all that the right arrow
+		# always faces left unless specified
+		if row == rightRowFacingOutward:
+			print("→")
+		else:
+			print("←")
+
 
 def selectMechanic(integer):
 	if integer == 1:
-			BewitchingFlight()
-			return
-	if integer == 2:
-			NarrowingWideningWitchHunt()
-			return
-	if integer == 3:
-			EE1()
-			return
+		BewitchingFlight()
+		return
+	elif integer == 2:
+		NarrowingWideningWitchHunt()
+		return
+	elif integer == 3:
+		EE1()
+		return
+	elif integer == 4:
+		EE2()
+		return
+	elif integer == 5:
+		IonCluster()
+		return
+	elif integer == 6:
+		Exaflares()
+		return
+	else:
+		print(integer, "is not a valid input.")
 
 
 while __name__ == "__main__":
@@ -88,6 +204,9 @@ while __name__ == "__main__":
 		"1. Bewitching Flight\n"
 		"2. Narrowing/Widening Witch Hunt\n"
 		"3. EE1 (Electrope Edge 1)\n"
+		"4. EE2 (Electrope Edge 2)\n"
+		"5. Ion Cluster\n"
+		"6. Exaflares (phase change)\n"
 		"Type in here: ")
 	selectMechanic(int(integer))
 	print("\n\n")
