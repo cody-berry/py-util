@@ -2,8 +2,16 @@
 # or M4S.
 import random
 
-# the below prints possible possibilities.
 
+
+# the below prints possible possibilities.
+print("When printing locations, the 🔴red dot is RDM position, 🟢green dot is SGE position.")
+print("A ⚫black dot is a filler emoji (empty positions).")
+print("Other emojis are used for other people's spots.")
+print("Please catch these characters: a️b️️️d️e️f️g️h️i️j️k️l️m️n️o️p️q️r️s️t️u️v️w️x️y️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️️z️ these are caused by bugs from accidental pasting.")
+print("Above letters can split into half when wrapping for no reason.")
+print("Generally 🔥 means a bug happened too. It's usually paired with a 🐦‍ somewhere in the code lol.")
+print("Other letters that look weird (️l️i️k️e️ '️t️️h️a️t️'️)️ are also bad.️")
 
 # example: "in lines exploding. supports bait...far."
 # other example "out lines exploding. DPS bait...near."
@@ -18,6 +26,47 @@ def BewitchingFlight():
 	print(DPSOrSupportsTargetedWithJump, end="")
 	print("...", end="")
 	print(bait)
+
+	input("Display first locations? (any content works, just ensure you press Enter when you're ready)")
+	if linesExplodingFirst == "in lines exploding. ":
+		print("🐦‍🔥xxx🐅")
+		print("🐇xxx🐷")
+		print("🐉xxx🔴")
+		print("🟢xxx🥝")
+	if linesExplodingFirst == "out lines exploding. ":
+		print("x🐦‍🔥🐅x")
+		print("x🐇🐷x")
+		print("x🐉🔴x")
+		print("x🟢🥝x")
+
+	input("Display second locations? Remember, " + DPSOrSupportsTargetedWithJump + " " + bait + ". Same procedure as last time.")
+	if linesExplodingFirst == "in lines exploding. ":
+		if ((DPSOrSupportsTargetedWithJump == "DPS bait" and bait == "near") or
+		   (DPSOrSupportsTargetedWithJump == "supports bait" and bait == "far")):
+			print("x🐇🐷x")
+			print("x🐦‍🔥🐅x")
+			print("x🐉🔴x")
+			print("x🟢🥝x")
+		if ((DPSOrSupportsTargetedWithJump == "DPS bait" and bait == "far") or
+		   (DPSOrSupportsTargetedWithJump == "supports bait" and bait == "near")):
+			print("x🐦‍🔥🐅x")
+			print("x🐇🐷x")
+			print("x🟢🥝x")
+			print("x🐉🔴x")
+	if linesExplodingFirst == "out lines exploding. ":
+		if ((DPSOrSupportsTargetedWithJump == "DPS bait" and bait == "near") or
+		   (DPSOrSupportsTargetedWithJump == "supports bait" and bait == "far")):
+			print("🐇xxx🐷")
+			print("🐦‍🔥xxx🐅")
+			print("🐉xxx🔴")
+			print("🟢xxx🥝")
+		if ((DPSOrSupportsTargetedWithJump == "DPS bait" and bait == "far") or
+		   (DPSOrSupportsTargetedWithJump == "supports bait" and bait == "near")):
+			print("🐦‍🔥xxx🐅")
+			print("🐇xxx🐷")
+			print("🟢xxx🥝")
+			print("🐉xxx🔴")
+
 
 
 # this will print something like:

@@ -140,13 +140,13 @@ with open("cardRatingsAll/all.json", "r") as jsonFile:
 
     cardNames = list(cardData.keys())
 
-# import the set data
+# import the set data 
 import requests
 scryfallDict = {}
 
 # constructing the API request
-for set_code in ["blb",
-                 "spg cn≥54 cn≤63"]: # we want to cover only the BLB SPG cards.
+for set_code in ["tdm",
+                 "spg+cn≥104+cn≤113"]: # we want to cover only the TDM SPG cards.
     url = f"https://api.scryfall.com/cards/search?q=e:{set_code}"
     print("Loading " + url + "...")
 
